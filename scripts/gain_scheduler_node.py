@@ -7,7 +7,7 @@ from threading import Lock
 
 from buoy_msgs.srv import PCScaleCommand
 
-from pbcontrol.damping_selector import get_gain, generate_schedule
+from buoy_examples.damping_selector import get_gain, generate_schedule
 
 
 class GainScheduler(Node):
