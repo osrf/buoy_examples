@@ -5,7 +5,7 @@ from rclpy.node import Node
 
 from threading import Lock
 
-from pb_msgs.srv import PCScaleCommand
+from buoy_msgs.srv import PCScaleCommand
 
 from pbcontrol.damping_selector import get_gain, generate_schedule
 

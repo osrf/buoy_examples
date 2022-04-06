@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(pbcontrol)
+project(buoy_examples)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -11,7 +11,7 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
-find_package(pb_msgs REQUIRED)
+find_package(buoy_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
 add_executable(torque_controller src/torque_controller.cpp)

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>pbcontrol</name>
+  <name>buoy_examples</name>
   <version>0.0.1</version>
   <description>Controller Nodes for Power Buoy</description>
   <maintainer email="anderson@mbari.org">Michael Anderson</maintainer>
@@ -12,7 +12,7 @@
 
   <depend>rclcpp</depend>
   <depend>rclcpy</depend>
-  <depend>pb_msgs</depend>
+  <depend>buoy_msgs</depend>
   <depend>std_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>

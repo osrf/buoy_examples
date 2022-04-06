@@ -9,13 +9,13 @@
 #include "JustInterp/JustInterp.hpp"
 
 // pbsrv commands
-#include "pb_msgs/srv/pc_pack_rate_command.hpp"
-#include "pb_msgs/srv/pc_wind_curr_command.hpp"
-#include "pb_msgs/srv/pc_retract_command.hpp"
-#include "pb_msgs/srv/pc_scale_command.hpp"
+#include "buoy_msgs/srv/pc_pack_rate_command.hpp"
+#include "buoy_msgs/srv/pc_wind_curr_command.hpp"
+#include "buoy_msgs/srv/pc_retract_command.hpp"
+#include "buoy_msgs/srv/pc_scale_command.hpp"
 
 // power converter feedback data
-#include "pb_msgs/msg/pc_record.hpp"
+#include "buoy_msgs/msg/pc_record.hpp"
 
 
 using std::placeholders::_1;
@@ -109,8 +109,8 @@ public:
   {
     set_params();
 
-    pack_rate_client_ = this->create_client<pb_msgs::srv::PCPackRateCommand>("/pc_pack_rate_command");
-    wind_curr_client_ = this->create_client<pb_msgs::srv::PCWindCurrCommand>("/pc_wind_curr_command");
+    pack_rate_client_ = this->create_client<buoy_msgs::srv::PCPackRateCommand>("/pc_pack_rate_command");
+    wind_curr_client_ = this->create_client<buoy_msgs::srv::PCWindCurrCommand>("/pc_wind_curr_command");
 
     bool found = wait_for_service(pack_rate_client_, "/pc_pack_rate_command");
     found &= wait_for_service(wind_curr_client_, "/pc_wind_curr_command");
@@ -122,7 +122,7 @@ public:
     }
     set_pc_pack_rate();
 
-    power_data_sub_ = this->create_subscription<pb_msgs::msg::PCRecord>("/power_data", 1,
+    power_data_sub_ = this->create_subscription<buoy_msgs::msg::PCRecord>("/power_data", 1,
         std::bind(&PBTorqueController::rpm_callback, this, _1));
 
   }
@@ -167,10 +167,10 @@ private:
 
   void set_pc_pack_rate()
   {
-    auto request = std::make_shared<pb_msgs::srv::PCPackRateCommand::Request>();
+    auto request = std::make_shared<buoy_msgs::srv::PCPackRateCommand::Request>();
     request->rate_hz = 50;
 
-    using RateServiceResponseFuture = rclcpp::Client<pb_msgs::srv::PCPackRateCommand>::SharedFuture;
+    using RateServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::PCPackRateCommand>::SharedFuture;
     auto pack_rate_response_callback = [this](RateServiceResponseFuture future)
     {
       if (future.get()->result.value==future.get()->result.OK)
@@ -192,7 +192,7 @@ private:
 
   }
 
-  void rpm_callback(const pb_msgs::msg::PCRecord &power)
+  void rpm_callback(const buoy_msgs::msg::PCRecord &power)
   {
     this->hz(std::string("feedback_rate"), sub_count_, sub_start_);
 
@@ -207,13 +207,10 @@ private:
     RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), "power_data -- I: " << power.target_a);
     RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), "torque_controller -- I: " << I);
 
-    auto request = std::make_shared<pb_msgs::srv::PCWindCurrCommand::Request>();
+    auto request = std::make_shared<buoy_msgs::srv::PCWindCurrCommand::Request>();
     request->wind_curr = I;
-    //auto request = std::make_shared<pb_msgs::srv::PCPackRateCommand::Request>();
-    //request->rate_hz = 50;
 
-    using WindCurrServiceResponseFuture = rclcpp::Client<pb_msgs::srv::PCWindCurrCommand>::SharedFuture;
-    //using WindCurrServiceResponseFuture = rclcpp::Client<pb_msgs::srv::PCPackRateCommand>::SharedFuture;
+    using WindCurrServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::PCWindCurrCommand>::SharedFuture;
     auto wind_curr_response_callback = [this](WindCurrServiceResponseFuture future)
     {
       if (future.get()->result.value==future.get()->result.OK)
@@ -232,8 +229,6 @@ private:
     };
 
     auto response = wind_curr_client_->async_send_request(request, wind_curr_response_callback);
-
-    //auto response = pack_rate_client_->async_send_request(request, wind_curr_response_callback);
 
   }
 
@@ -259,9 +254,9 @@ private:
 
   uint16_t sub_count_, cmd_count_;
   rclcpp::Time sub_start_, cmd_start_;
-  rclcpp::Subscription<pb_msgs::msg::PCRecord>::SharedPtr power_data_sub_;
-  rclcpp::Client<pb_msgs::srv::PCPackRateCommand>::SharedPtr pack_rate_client_;
-  rclcpp::Client<pb_msgs::srv::PCWindCurrCommand>::SharedPtr wind_curr_client_;
+  rclcpp::Subscription<buoy_msgs::msg::PCRecord>::SharedPtr power_data_sub_;
+  rclcpp::Client<buoy_msgs::srv::PCPackRateCommand>::SharedPtr pack_rate_client_;
+  rclcpp::Client<buoy_msgs::srv::PCWindCurrCommand>::SharedPtr wind_curr_client_;
 };
 
 int main(int argc, char **argv)
