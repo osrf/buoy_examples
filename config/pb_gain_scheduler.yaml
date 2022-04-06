@@ -1,0 +1,4 @@
+/pb_gain_scheduler:
+  ros__parameters:
+    get_scale_timer_mins: 1800
+    set_scale_timer_mins: 300
