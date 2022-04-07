@@ -15,7 +15,7 @@ find_package(buoy_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
 add_executable(torque_controller src/torque_controller.cpp)
-ament_target_dependencies(torque_controller rclcpp pb_msgs)
+ament_target_dependencies(torque_controller rclcpp buoy_msgs)
 target_include_directories(torque_controller PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
