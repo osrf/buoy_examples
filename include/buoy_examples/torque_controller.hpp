@@ -9,12 +9,12 @@ struct PBTorqueControlPolicy;  //defined by user in torque_control_policy.hpp
 class PBTorqueController : public PBInterface::PBController<PBTorqueController>
 {
 public:
-  //using PBInterface::PBController<PBTorqueController>::PBController;
   PBTorqueController(const std::string &node_name);
   virtual ~PBTorqueController() = default;
 
 private:
-  friend CRTP;
+  friend CRTP;  //syntactic sugar (see https://stackoverflow.com/a/58435857/9686600)
+
   virtual void set_params() override final;  //defined by user in torque_control_policy.hpp
   virtual void power_callback(const buoy_msgs::msg::PCRecord &data) override final;
 

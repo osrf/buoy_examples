@@ -47,9 +47,6 @@
 #include "buoy_msgs/msg/tf_record.hpp"  // trefoil
 #include "buoy_msgs/msg/pb_record.hpp"  // consolidated
 
-#include <map>
-#include <chrono>
-
 
 namespace PBInterface
 {
@@ -81,30 +78,30 @@ public:
   {
     pc_pack_rate_client_ = this->create_client<buoy_msgs::srv::PCPackRateCommand>("/pc_pack_rate_command");
     pc_wind_curr_client_ = this->create_client<buoy_msgs::srv::PCWindCurrCommand>("/pc_wind_curr_command");
-    bender_client_  = this->create_client<buoy_msgs::srv::BenderCommand>("/bender_command");
-    bc_reset_client_  = this->create_client<buoy_msgs::srv::BCResetCommand>("/bc_reset_command");
-    pump_client_  = this->create_client<buoy_msgs::srv::PumpCommand>("/pump_command");
-    valve_client_  = this->create_client<buoy_msgs::srv::ValveCommand>("/valve_command");
-    tether_client_  = this->create_client<buoy_msgs::srv::TetherCommand>("/tether_command");
-    sc_reset_client_  = this->create_client<buoy_msgs::srv::SCResetCommand>("/sc_reset_command");
-    sc_pack_rate_client_  = this->create_client<buoy_msgs::srv::SCPackRateCommand>("/sc_pack_rate_command");
-    pc_scale_client_  = this->create_client<buoy_msgs::srv::PCScaleCommand>("/pc_scale_command");
-    pc_retract_client_  = this->create_client<buoy_msgs::srv::PCRetractCommand>("/pc_retract_command");
-    pc_v_targ_max_client_  = this->create_client<buoy_msgs::srv::PCVTargMaxCommand>("/pc_v_targ_max_command");
-    pc_charge_curr_lim_client_  = this->create_client<buoy_msgs::srv::PCChargeCurrLimCommand>("/pc_charge_curr_lim_command");
-    pc_batt_switch_client_  = this->create_client<buoy_msgs::srv::PCBattSwitchCommand>("/pc_batt_switch_command");
-    gain_client_  = this->create_client<buoy_msgs::srv::GainCommand>("/gain_command");
-    pc_std_dev_targ_client_  = this->create_client<buoy_msgs::srv::PCStdDevTargCommand>("/pc_std_dev_targ_command");
-    pc_draw_curr_lim_client_  = this->create_client<buoy_msgs::srv::PCDrawCurrLimCommand>("/pc_draw_curr_lim_command");
-    pc_bias_curr_client_  = this->create_client<buoy_msgs::srv::PCBiasCurrCommand>("/pc_bias_curr_command");
-    tf_set_pos_client_  = this->create_client<buoy_msgs::srv::TFSetPosCommand>("/tf_set_pos_command");
-    tf_set_actual_pos_client_  = this->create_client<buoy_msgs::srv::TFSetActualPosCommand>("/tf_set_actual_pos_command");
-    tf_set_mode_client_  = this->create_client<buoy_msgs::srv::TFSetModeCommand>("/tf_set_mode_command");
-    tf_set_charge_mode_client_  = this->create_client<buoy_msgs::srv::TFSetChargeModeCommand>("/tf_set_charge_mode_command");
-    tf_set_curr_lim_client_  = this->create_client<buoy_msgs::srv::TFSetCurrLimCommand>("/tf_set_curr_lim_command");
-    tf_set_state_machine_client_  = this->create_client<buoy_msgs::srv::TFSetStateMachineCommand>("/tf_set_state_machine_command");
-    tf_watch_dog_client_  = this->create_client<buoy_msgs::srv::TFWatchDogCommand>("/tf_watch_dog_command");
-    tf_reset_client_  = this->create_client<buoy_msgs::srv::TFResetCommand>("/tf_reset_command");
+    bender_client_ = this->create_client<buoy_msgs::srv::BenderCommand>("/bender_command");
+    bc_reset_client_ = this->create_client<buoy_msgs::srv::BCResetCommand>("/bc_reset_command");
+    pump_client_ = this->create_client<buoy_msgs::srv::PumpCommand>("/pump_command");
+    valve_client_ = this->create_client<buoy_msgs::srv::ValveCommand>("/valve_command");
+    tether_client_ = this->create_client<buoy_msgs::srv::TetherCommand>("/tether_command");
+    sc_reset_client_ = this->create_client<buoy_msgs::srv::SCResetCommand>("/sc_reset_command");
+    sc_pack_rate_client_ = this->create_client<buoy_msgs::srv::SCPackRateCommand>("/sc_pack_rate_command");
+    pc_scale_client_ = this->create_client<buoy_msgs::srv::PCScaleCommand>("/pc_scale_command");
+    pc_retract_client_ = this->create_client<buoy_msgs::srv::PCRetractCommand>("/pc_retract_command");
+    pc_v_targ_max_client_ = this->create_client<buoy_msgs::srv::PCVTargMaxCommand>("/pc_v_targ_max_command");
+    pc_charge_curr_lim_client_ = this->create_client<buoy_msgs::srv::PCChargeCurrLimCommand>("/pc_charge_curr_lim_command");
+    pc_batt_switch_client_ = this->create_client<buoy_msgs::srv::PCBattSwitchCommand>("/pc_batt_switch_command");
+    gain_client_ = this->create_client<buoy_msgs::srv::GainCommand>("/gain_command");
+    pc_std_dev_targ_client_ = this->create_client<buoy_msgs::srv::PCStdDevTargCommand>("/pc_std_dev_targ_command");
+    pc_draw_curr_lim_client_ = this->create_client<buoy_msgs::srv::PCDrawCurrLimCommand>("/pc_draw_curr_lim_command");
+    pc_bias_curr_client_ = this->create_client<buoy_msgs::srv::PCBiasCurrCommand>("/pc_bias_curr_command");
+    tf_set_pos_client_ = this->create_client<buoy_msgs::srv::TFSetPosCommand>("/tf_set_pos_command");
+    tf_set_actual_pos_client_ = this->create_client<buoy_msgs::srv::TFSetActualPosCommand>("/tf_set_actual_pos_command");
+    tf_set_mode_client_ = this->create_client<buoy_msgs::srv::TFSetModeCommand>("/tf_set_mode_command");
+    tf_set_charge_mode_client_ = this->create_client<buoy_msgs::srv::TFSetChargeModeCommand>("/tf_set_charge_mode_command");
+    tf_set_curr_lim_client_ = this->create_client<buoy_msgs::srv::TFSetCurrLimCommand>("/tf_set_curr_lim_command");
+    tf_set_state_machine_client_ = this->create_client<buoy_msgs::srv::TFSetStateMachineCommand>("/tf_set_state_machine_command");
+    tf_watch_dog_client_ = this->create_client<buoy_msgs::srv::TFWatchDogCommand>("/tf_watch_dog_command");
+    tf_reset_client_ = this->create_client<buoy_msgs::srv::TFResetCommand>("/tf_reset_command");
 
     bool found = wait_for_service(pc_pack_rate_client_, "/pc_pack_rate_command");
     found &= wait_for_service(pc_wind_curr_client_, "/pc_wind_curr_command");
@@ -212,24 +209,6 @@ public:
     auto request = std::make_shared<buoy_msgs::srv::PCPackRateCommand::Request>();
     request->rate_hz = 50;
 
-    /*
-    auto pack_rate_response_callback = [this](PCPackRateServiceResponseFuture future)
-    {
-      if (future.get()->result.value==future.get()->result.OK)
-      {
-        RCLCPP_INFO(rclcpp::get_logger(this->get_name()),
-                    "Successfully set /pc_pack_rate_command to 50Hz");
-      }
-      else
-      {
-        RCLCPP_ERROR(rclcpp::get_logger(this->get_name()),
-                     "Failed to set /pc_pack_rate_command to 50Hz: received error code [[ %s ]]",
-                     pbsrv_enum2str[future.get()->result.value].c_str());
-        //TODO: should we shutdown?
-      }
-    };
-    */
-
     auto response = pc_pack_rate_client_->async_send_request(request, pc_pack_rate_callback);
 
   }
@@ -239,24 +218,6 @@ public:
   {
     auto request = std::make_shared<buoy_msgs::srv::SCPackRateCommand::Request>();
     request->rate_hz = 50;
-
-    /*
-    auto pack_rate_response_callback = [this](SCPackRateServiceResponseFuture future)
-    {
-      if (future.get()->result.value==future.get()->result.OK)
-      {
-        RCLCPP_INFO(rclcpp::get_logger(this->get_name()),
-                    "Successfully set /sc_pack_rate_command to 50Hz");
-      }
-      else
-      {
-        RCLCPP_ERROR(rclcpp::get_logger(this->get_name()),
-                     "Failed to set /sc_pack_rate_command to 50Hz: received error code [[ %s ]]",
-                     pbsrv_enum2str[future.get()->result.value].c_str());
-        //TODO: should we shutdown?
-      }
-    };
-    */
 
     auto response = sc_pack_rate_client_->async_send_request(request, sc_pack_rate_callback);
 

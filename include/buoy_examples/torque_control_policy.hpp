@@ -5,8 +5,7 @@
 / User-space to define control policy and param loading /
 ********************************************************/
 
-#include <vector>
-#include <cmath>
+//#include <cmath>
 
 //interp1d for rpm->winding current
 #include "JustInterp/JustInterp.hpp"
