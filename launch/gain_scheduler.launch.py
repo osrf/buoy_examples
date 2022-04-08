@@ -12,7 +12,7 @@ def generate_launch_description():
         )
 
     node=Node(
-        package = 'pbcontrol',
+        package = 'buoy_examples',
         name = 'pb_gain_scheduler',
         executable = 'gain_scheduler_node.py',
         parameters = [config]
