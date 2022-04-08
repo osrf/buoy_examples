@@ -68,7 +68,8 @@ template<class ControllerImplCRTP>
 class PBController : public rclcpp::Node
 {
 public:
-  using CRTP = PBController;
+  using CRTP = PBController; // syntactic sugar for friend class
+                             // see https://stackoverflow.com/a/58435857/9686600
   PBController(const std::string &node_name)
     : Node(node_name),
       with_ahrs(false),
@@ -137,8 +138,40 @@ public:
       RCLCPP_ERROR(rclcpp::get_logger(node_name), "Did not find required services");
       return;
     }
+
+    bender_callback = service_response_callback<BenderServiceCallback, BenderServiceResponseFuture>();
+    bc_reset_callback = service_response_callback<BCResetServiceCallback, BCResetServiceResponseFuture>();
+    pump_callback = service_response_callback<PumpServiceCallback, PumpServiceResponseFuture>();
+    valve_callback = service_response_callback<ValveServiceCallback, ValveServiceResponseFuture>();
+    tether_callback = service_response_callback<TetherServiceCallback, TetherServiceResponseFuture>();
+    sc_reset_callback = service_response_callback<SCResetServiceCallback, SCResetServiceResponseFuture>();
+    sc_pack_rate_callback = service_response_callback<SCPackRateServiceCallback, SCPackRateServiceResponseFuture>();
+    pc_scale_callback = service_response_callback<PCScaleServiceCallback, PCScaleServiceResponseFuture>();
+    pc_retract_callback = service_response_callback<PCRetractServiceCallback, PCRetractServiceResponseFuture>();
+    pc_v_targ_max_callback = service_response_callback<PCVTargMaxServiceCallback, PCVTargMaxServiceResponseFuture>();
+    pc_charge_curr_lim_callback = service_response_callback<PCChargeCurrLimServiceCallback, PCChargeCurrLimServiceResponseFuture>();
+    pc_batt_switch_callback = service_response_callback<PCBattSwitchServiceCallback, PCBattSwitchServiceResponseFuture>();
+    gain_callback = service_response_callback<GainServiceCallback, GainServiceResponseFuture>();
+    pc_std_dev_targ_callback = service_response_callback<PCStdDevTargServiceCallback, PCStdDevTargServiceResponseFuture>();
+    pc_draw_curr_lim_callback = service_response_callback<PCDrawCurrLimServiceCallback, PCDrawCurrLimServiceResponseFuture>();
+    pc_wind_curr_callback = service_response_callback<PCWindCurrServiceCallback, PCWindCurrServiceResponseFuture>();
+    pc_bias_curr_callback = service_response_callback<PCBiasCurrServiceCallback, PCBiasCurrServiceResponseFuture>();
+    pc_pack_rate_callback = service_response_callback<PCPackRateServiceCallback, PCPackRateServiceResponseFuture>();
+    tf_set_pos_callback = service_response_callback<TFSetPosServiceCallback, TFSetPosServiceResponseFuture>();
+    tf_set_actual_pos_callback = service_response_callback<TFSetActualPosServiceCallback, TFSetActualPosServiceResponseFuture>();
+    tf_set_mode_callback = service_response_callback<TFSetModeServiceCallback, TFSetModeServiceResponseFuture>();
+    tf_set_charge_mode_callback = service_response_callback<TFSetChargeModeServiceCallback, TFSetChargeModeServiceResponseFuture>();
+    tf_set_curr_lim_callback = service_response_callback<TFSetCurrLimServiceCallback, TFSetCurrLimServiceResponseFuture>();
+    tf_set_state_machine_callback = service_response_callback<TFSetStateMachineServiceCallback, TFSetStateMachineServiceResponseFuture>();
+    tf_watchdog_callback = service_response_callback<TFWatchDogServiceCallback, TFWatchDogServiceResponseFuture>();
+    tf_reset_callback = service_response_callback<TFResetServiceCallback, TFResetServiceResponseFuture>();
+
+    static_cast<ControllerImplCRTP*>(this)->set_params();
+    setup_subscribers();
+
   }
-  
+
+  // set with_**** from parameters before calling to enable subs
   void setup_subscribers()
   {
     if (this->with_ahrs)
@@ -173,11 +206,13 @@ public:
     }
   }
 
+  // set publish rate of PC Microcontroller telemetry
   void set_pc_pack_rate()
   {
     auto request = std::make_shared<buoy_msgs::srv::PCPackRateCommand::Request>();
     request->rate_hz = 50;
 
+    /*
     auto pack_rate_response_callback = [this](PCPackRateServiceResponseFuture future)
     {
       if (future.get()->result.value==future.get()->result.OK)
@@ -193,16 +228,19 @@ public:
         //TODO: should we shutdown?
       }
     };
+    */
 
-    auto response = pc_pack_rate_client_->async_send_request(request, pack_rate_response_callback);
+    auto response = pc_pack_rate_client_->async_send_request(request, pc_pack_rate_callback);
 
   }
 
+  // set publish rate of SC Microcontroller telemetry
   void set_sc_pack_rate()
   {
     auto request = std::make_shared<buoy_msgs::srv::SCPackRateCommand::Request>();
     request->rate_hz = 50;
 
+    /*
     auto pack_rate_response_callback = [this](SCPackRateServiceResponseFuture future)
     {
       if (future.get()->result.value==future.get()->result.OK)
@@ -218,22 +256,25 @@ public:
         //TODO: should we shutdown?
       }
     };
+    */
 
-    auto response = sc_pack_rate_client_->async_send_request(request, pack_rate_response_callback);
+    auto response = sc_pack_rate_client_->async_send_request(request, sc_pack_rate_callback);
 
   }
 
 protected:
   virtual ~PBController() = default;
-  
-  virtual void set_params() {};  // defined by user
 
+  // set_params and callbacks optionally defined by user
+  virtual void set_params() {};
   virtual void ahrs_callback(const buoy_msgs::msg::XBRecord &) {};
   virtual void battery_callback(const buoy_msgs::msg::BCRecord &) {};
   virtual void spring_callback(const buoy_msgs::msg::SCRecord &) {};
   virtual void power_callback(const buoy_msgs::msg::PCRecord &) {};
   virtual void trefoil_callback(const buoy_msgs::msg::TFRecord &) {};
   virtual void powerbuoy_callback(const buoy_msgs::msg::PBRecord &) {};
+
+  bool with_ahrs, with_battery, with_spring, with_power, with_trefoil, with_all;
 
   using BenderServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::BenderCommand>::SharedFuture;
   using BCResetServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::BCResetCommand>::SharedFuture;
@@ -262,7 +303,59 @@ protected:
   using TFWatchDogServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::TFWatchDogCommand>::SharedFuture;
   using TFResetServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::TFResetCommand>::SharedFuture;
 
-  bool with_ahrs, with_battery, with_spring, with_power, with_trefoil, with_all;
+  using BenderServiceCallback = rclcpp::Client<buoy_msgs::srv::BenderCommand>::CallbackType;
+  using BCResetServiceCallback = rclcpp::Client<buoy_msgs::srv::BCResetCommand>::CallbackType;
+  using PumpServiceCallback = rclcpp::Client<buoy_msgs::srv::PumpCommand>::CallbackType;
+  using ValveServiceCallback = rclcpp::Client<buoy_msgs::srv::ValveCommand>::CallbackType;
+  using TetherServiceCallback = rclcpp::Client<buoy_msgs::srv::TetherCommand>::CallbackType;
+  using SCResetServiceCallback = rclcpp::Client<buoy_msgs::srv::SCResetCommand>::CallbackType;
+  using SCPackRateServiceCallback = rclcpp::Client<buoy_msgs::srv::SCPackRateCommand>::CallbackType;
+  using PCScaleServiceCallback = rclcpp::Client<buoy_msgs::srv::PCScaleCommand>::CallbackType;
+  using PCRetractServiceCallback = rclcpp::Client<buoy_msgs::srv::PCRetractCommand>::CallbackType;
+  using PCVTargMaxServiceCallback = rclcpp::Client<buoy_msgs::srv::PCVTargMaxCommand>::CallbackType;
+  using PCChargeCurrLimServiceCallback = rclcpp::Client<buoy_msgs::srv::PCChargeCurrLimCommand>::CallbackType;
+  using PCBattSwitchServiceCallback = rclcpp::Client<buoy_msgs::srv::PCBattSwitchCommand>::CallbackType;
+  using GainServiceCallback = rclcpp::Client<buoy_msgs::srv::GainCommand>::CallbackType;
+  using PCStdDevTargServiceCallback = rclcpp::Client<buoy_msgs::srv::PCStdDevTargCommand>::CallbackType;
+  using PCDrawCurrLimServiceCallback = rclcpp::Client<buoy_msgs::srv::PCDrawCurrLimCommand>::CallbackType;
+  using PCWindCurrServiceCallback = rclcpp::Client<buoy_msgs::srv::PCWindCurrCommand>::CallbackType;
+  using PCBiasCurrServiceCallback = rclcpp::Client<buoy_msgs::srv::PCBiasCurrCommand>::CallbackType;
+  using PCPackRateServiceCallback = rclcpp::Client<buoy_msgs::srv::PCPackRateCommand>::CallbackType;
+  using TFSetPosServiceCallback = rclcpp::Client<buoy_msgs::srv::TFSetPosCommand>::CallbackType;
+  using TFSetActualPosServiceCallback = rclcpp::Client<buoy_msgs::srv::TFSetActualPosCommand>::CallbackType;
+  using TFSetModeServiceCallback = rclcpp::Client<buoy_msgs::srv::TFSetModeCommand>::CallbackType;
+  using TFSetChargeModeServiceCallback = rclcpp::Client<buoy_msgs::srv::TFSetChargeModeCommand>::CallbackType;
+  using TFSetCurrLimServiceCallback = rclcpp::Client<buoy_msgs::srv::TFSetCurrLimCommand>::CallbackType;
+  using TFSetStateMachineServiceCallback = rclcpp::Client<buoy_msgs::srv::TFSetStateMachineCommand>::CallbackType;
+  using TFWatchDogServiceCallback = rclcpp::Client<buoy_msgs::srv::TFWatchDogCommand>::CallbackType;
+  using TFResetServiceCallback = rclcpp::Client<buoy_msgs::srv::TFResetCommand>::CallbackType;
+
+  BenderServiceCallback bender_callback;
+  BCResetServiceCallback bc_reset_callback;
+  PumpServiceCallback pump_callback;
+  ValveServiceCallback valve_callback;
+  TetherServiceCallback tether_callback;
+  SCResetServiceCallback sc_reset_callback;
+  SCPackRateServiceCallback sc_pack_rate_callback;
+  PCScaleServiceCallback pc_scale_callback;
+  PCRetractServiceCallback pc_retract_callback;
+  PCVTargMaxServiceCallback pc_v_targ_max_callback;
+  PCChargeCurrLimServiceCallback pc_charge_curr_lim_callback;
+  PCBattSwitchServiceCallback pc_batt_switch_callback;
+  GainServiceCallback gain_callback;
+  PCStdDevTargServiceCallback pc_std_dev_targ_callback;
+  PCDrawCurrLimServiceCallback pc_draw_curr_lim_callback;
+  PCWindCurrServiceCallback pc_wind_curr_callback;
+  PCBiasCurrServiceCallback pc_bias_curr_callback;
+  PCPackRateServiceCallback pc_pack_rate_callback;
+  TFSetPosServiceCallback tf_set_pos_callback;
+  TFSetActualPosServiceCallback tf_set_actual_pos_callback;
+  TFSetModeServiceCallback tf_set_mode_callback;
+  TFSetChargeModeServiceCallback tf_set_charge_mode_callback;
+  TFSetCurrLimServiceCallback tf_set_curr_lim_callback;
+  TFSetStateMachineServiceCallback tf_set_state_machine_callback;
+  TFWatchDogServiceCallback tf_watchdog_callback;
+  TFResetServiceCallback tf_reset_callback;
 
   rclcpp::Client<buoy_msgs::srv::BenderCommand>::SharedPtr bender_client_;
   rclcpp::Client<buoy_msgs::srv::BCResetCommand>::SharedPtr bc_reset_client_;
@@ -290,6 +383,29 @@ protected:
   rclcpp::Client<buoy_msgs::srv::TFSetStateMachineCommand>::SharedPtr tf_set_state_machine_client_;
   rclcpp::Client<buoy_msgs::srv::TFWatchDogCommand>::SharedPtr tf_watch_dog_client_;
   rclcpp::Client<buoy_msgs::srv::TFResetCommand>::SharedPtr tf_reset_client_;
+
+  template<class CallbackType, class ServiceResponseFuture>
+  CallbackType service_response_callback()
+  {
+    CallbackType callback = [this](ServiceResponseFuture future)
+    {
+      if (future.get()->result.value==future.get()->result.OK)
+      {
+        RCLCPP_INFO(rclcpp::get_logger(this->get_name()),
+                    "Command Successful");
+      }
+      else
+      {
+        RCLCPP_INFO(rclcpp::get_logger(this->get_name()),
+                    "Command Failed: received error code [[ %s ]]",
+                    pbsrv_enum2str[future.get()->result.value].c_str());
+        //TODO: should we shutdown?
+      }
+    };
+
+    return callback;
+  }
+
 
 private:
 
