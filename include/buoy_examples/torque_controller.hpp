@@ -13,12 +13,10 @@ public:
   PBTorqueController(const std::string &node_name);
   virtual ~PBTorqueController() = default;
 
-protected:
-  virtual void power_callback(const buoy_msgs::msg::PCRecord &data) override final;
-
 private:
   friend CRTP;
   virtual void set_params() override final;  //defined by user in torque_control_policy.hpp
+  virtual void power_callback(const buoy_msgs::msg::PCRecord &data) override final;
 
   std::unique_ptr<PBTorqueControlPolicy> policy_;
 
