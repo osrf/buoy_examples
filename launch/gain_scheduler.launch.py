@@ -6,7 +6,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld = LaunchDescription()
     config = os.path.join(
-        get_package_share_directory('pbcontrol'),
+        get_package_share_directory('buoy_examples'),
         'config',
         'pb_gain_scheduler.yaml'
         )
