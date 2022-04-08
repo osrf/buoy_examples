@@ -89,19 +89,19 @@ std::ostream& operator<<(std::ostream& os, const PBTorqueControlPolicy &policy)
 
 void PBTorqueController::set_params()
 {
-  this->declare_parameter("Torque_constant", policy_->Torque_constant);
-  policy_->Torque_constant = this->get_parameter("Torque_constant").as_double();
+  this->declare_parameter("torque_constant", policy_->Torque_constant);
+  policy_->Torque_constant = this->get_parameter("torque_constant").as_double();
 
-  this->declare_parameter("N_Spec", std::vector<double>(policy_->N_Spec.begin(), policy_->N_Spec.end()));
-  std::vector<double> temp_double_arr = this->get_parameter("N_Spec").as_double_array();
+  this->declare_parameter("n_spec", std::vector<double>(policy_->N_Spec.begin(), policy_->N_Spec.end()));
+  std::vector<double> temp_double_arr = this->get_parameter("n_spec").as_double_array();
   policy_->N_Spec.assign(temp_double_arr.begin(), temp_double_arr.end());
 
-  this->declare_parameter("Torque_Spec", std::vector<double>(policy_->Torque_Spec.begin(), policy_->Torque_Spec.end()));
-  temp_double_arr = this->get_parameter("Torque_Spec").as_double_array();
+  this->declare_parameter("torque_spec", std::vector<double>(policy_->Torque_Spec.begin(), policy_->Torque_Spec.end()));
+  temp_double_arr = this->get_parameter("torque_spec").as_double_array();
   policy_->Torque_Spec.assign(temp_double_arr.begin(), temp_double_arr.end());
 
   policy_->update_params();
-  RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), *policy_);
+  RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()), *policy_);
 }
 
 #endif //TORQUE_CONTROL_POLICY_HPP_
