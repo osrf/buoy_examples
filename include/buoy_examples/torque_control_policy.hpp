@@ -89,6 +89,9 @@ std::ostream& operator<<(std::ostream& os, const PBTorqueControlPolicy &policy)
 
 void PBTorqueController::set_params()
 {
+  this->declare_parameter("with_power", false);
+  this->with_power = this->get_parameter("with_power").as_bool();
+
   this->declare_parameter("torque_constant", policy_->Torque_constant);
   policy_->Torque_constant = this->get_parameter("torque_constant").as_double();
 
