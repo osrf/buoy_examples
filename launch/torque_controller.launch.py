@@ -6,13 +6,13 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld = LaunchDescription()
     config = os.path.join(
-        get_package_share_directory('pbcontrol'),
+        get_package_share_directory('buoy_examples'),
         'config',
         'pb_torque_controller.yaml'
         )
 
     node=Node(
-        package = 'pbcontrol',
+        package = 'buoy_examples',
         name = 'pb_torque_controller',
         executable = 'torque_controller',
         parameters = [config]

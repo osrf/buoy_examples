@@ -68,13 +68,7 @@ public:
   using CRTP = PBController; // syntactic sugar for friend class
                              // see https://stackoverflow.com/a/58435857/9686600
   PBController(const std::string &node_name)
-    : Node(node_name),
-      with_ahrs(false),
-      with_battery(false),
-      with_spring(false),
-      with_power(false),
-      with_trefoil(false),
-      with_all(false)
+    : Node(node_name)
   {
     pc_pack_rate_client_ = this->create_client<buoy_msgs::srv::PCPackRateCommand>("/pc_pack_rate_command");
     pc_wind_curr_client_ = this->create_client<buoy_msgs::srv::PCWindCurrCommand>("/pc_wind_curr_command");
@@ -163,41 +157,60 @@ public:
     tf_watchdog_callback = service_response_callback<TFWatchDogServiceCallback, TFWatchDogServiceResponseFuture>();
     tf_reset_callback = service_response_callback<TFResetServiceCallback, TFResetServiceResponseFuture>();
 
-    static_cast<ControllerImplCRTP*>(this)->set_params();
     setup_subscribers();
 
   }
 
-  // set with_**** from parameters before calling to enable subs
+  // if user has shadowed a callback in their user-derived class, this will use their
+  // implementation; if they did not define one, the subscriber will not be set up
   void setup_subscribers()
   {
-    if (this->with_ahrs)
+    if (&ControllerImplCRTP::ahrs_callback == &PBController::ahrs_callback) {}
+    else
     {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()), "Subscribing to XBRecord on '/ahrs_data'");
       ahrs_data_sub_ = this->create_subscription<buoy_msgs::msg::XBRecord>("/ahrs_data", 1,
           std::bind(&ControllerImplCRTP::ahrs_callback, static_cast<ControllerImplCRTP*>(this), _1));
     }
-    if (this->with_battery)
+
+    if (&ControllerImplCRTP::battery_callback == &PBController::battery_callback) {}
+    else
     {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()), "Subscribing to BCRecord on '/battery_data'");
       battery_data_sub_ = this->create_subscription<buoy_msgs::msg::BCRecord>("/battery_data", 1,
-            std::bind(&ControllerImplCRTP::battery_callback, static_cast<ControllerImplCRTP*>(this), _1));
+          std::bind(&ControllerImplCRTP::battery_callback, static_cast<ControllerImplCRTP*>(this), _1));
     }
-    if (this->with_spring)
+
+    if (&ControllerImplCRTP::spring_callback == &PBController::spring_callback) {}
+    else
     {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()), "Subscribing to SCRecord on '/spring_data'");
       spring_data_sub_ = this->create_subscription<buoy_msgs::msg::SCRecord>("/spring_data", 1,
           std::bind(&ControllerImplCRTP::spring_callback, static_cast<ControllerImplCRTP*>(this), _1));
     }
-    if (this->with_power)
+
+    if (&ControllerImplCRTP::power_callback == &PBController::power_callback) {}
+    else
     {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()), "Subscribing to PCRecord on '/power_data'");
       power_data_sub_ = this->create_subscription<buoy_msgs::msg::PCRecord>("/power_data", 1,
           std::bind(&ControllerImplCRTP::power_callback, static_cast<ControllerImplCRTP*>(this), _1));
     }
-    if (this->with_trefoil)
+    
+
+    if (&ControllerImplCRTP::trefoil_callback == &PBController::trefoil_callback) {}
+    else
     {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()), "Subscribing to TFRecord on '/trefoil_data'");
       trefoil_data_sub_ = this->create_subscription<buoy_msgs::msg::TFRecord>("/trefoil_data", 1,
           std::bind(&ControllerImplCRTP::trefoil_callback, static_cast<ControllerImplCRTP*>(this), _1));
     }
-    if (this->with_all)
+    
+
+    if (&ControllerImplCRTP::powerbuoy_callback == &PBController::powerbuoy_callback) {}
+    else
     {
+      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()), "Subscribing to PBRecord on '/powerbuoy_data'");
       powerbuoy_data_sub_ = this->create_subscription<buoy_msgs::msg::PBRecord>("/powerbuoy_data", 1,
           std::bind(&ControllerImplCRTP::powerbuoy_callback, static_cast<ControllerImplCRTP*>(this), _1));
     }
@@ -228,15 +241,14 @@ protected:
 
   // set_params and callbacks optionally defined by user
   virtual void set_params() {};
-  virtual void ahrs_callback(const buoy_msgs::msg::XBRecord &) {};
-  virtual void battery_callback(const buoy_msgs::msg::BCRecord &) {};
-  virtual void spring_callback(const buoy_msgs::msg::SCRecord &) {};
-  virtual void power_callback(const buoy_msgs::msg::PCRecord &) {};
-  virtual void trefoil_callback(const buoy_msgs::msg::TFRecord &) {};
-  virtual void powerbuoy_callback(const buoy_msgs::msg::PBRecord &) {};
+  void ahrs_callback(const buoy_msgs::msg::XBRecord &) {};
+  void battery_callback(const buoy_msgs::msg::BCRecord &) {};
+  void spring_callback(const buoy_msgs::msg::SCRecord &) {};
+  void power_callback(const buoy_msgs::msg::PCRecord &) {};
+  void trefoil_callback(const buoy_msgs::msg::TFRecord &) {};
+  void powerbuoy_callback(const buoy_msgs::msg::PBRecord &) {};
 
-  bool with_ahrs, with_battery, with_spring, with_power, with_trefoil, with_all;
-
+  // abbrv futures
   using BenderServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::BenderCommand>::SharedFuture;
   using BCResetServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::BCResetCommand>::SharedFuture;
   using PumpServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::PumpCommand>::SharedFuture;
@@ -264,6 +276,7 @@ protected:
   using TFWatchDogServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::TFWatchDogCommand>::SharedFuture;
   using TFResetServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::TFResetCommand>::SharedFuture;
 
+  // abbrv callback types
   using BenderServiceCallback = rclcpp::Client<buoy_msgs::srv::BenderCommand>::CallbackType;
   using BCResetServiceCallback = rclcpp::Client<buoy_msgs::srv::BCResetCommand>::CallbackType;
   using PumpServiceCallback = rclcpp::Client<buoy_msgs::srv::PumpCommand>::CallbackType;
@@ -291,6 +304,7 @@ protected:
   using TFWatchDogServiceCallback = rclcpp::Client<buoy_msgs::srv::TFWatchDogCommand>::CallbackType;
   using TFResetServiceCallback = rclcpp::Client<buoy_msgs::srv::TFResetCommand>::CallbackType;
 
+  // declare callbacks for all services
   BenderServiceCallback bender_callback;
   BCResetServiceCallback bc_reset_callback;
   PumpServiceCallback pump_callback;
@@ -318,6 +332,7 @@ protected:
   TFWatchDogServiceCallback tf_watchdog_callback;
   TFResetServiceCallback tf_reset_callback;
 
+  // declare all clients
   rclcpp::Client<buoy_msgs::srv::BenderCommand>::SharedPtr bender_client_;
   rclcpp::Client<buoy_msgs::srv::BCResetCommand>::SharedPtr bc_reset_client_;
   rclcpp::Client<buoy_msgs::srv::PumpCommand>::SharedPtr pump_client_;
@@ -345,6 +360,10 @@ protected:
   rclcpp::Client<buoy_msgs::srv::TFWatchDogCommand>::SharedPtr tf_watch_dog_client_;
   rclcpp::Client<buoy_msgs::srv::TFResetCommand>::SharedPtr tf_reset_client_;
 
+
+private:
+
+  // generic service callback
   template<class CallbackType, class ServiceResponseFuture>
   CallbackType service_response_callback()
   {
@@ -367,9 +386,6 @@ protected:
     return callback;
   }
 
-
-private:
-
   template <class T>
   bool wait_for_service(T &client, const std::string &service)
   {
@@ -389,6 +405,7 @@ private:
     return true;
   }
 
+  // declare all subscribers
   rclcpp::Subscription<buoy_msgs::msg::XBRecord>::SharedPtr ahrs_data_sub_;
   rclcpp::Subscription<buoy_msgs::msg::BCRecord>::SharedPtr battery_data_sub_;
   rclcpp::Subscription<buoy_msgs::msg::SCRecord>::SharedPtr spring_data_sub_;
