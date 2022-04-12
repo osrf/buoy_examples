@@ -7,10 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
 find_package(rclcpp REQUIRED)
-find_package(rclpy REQUIRED)
 find_package(buoy_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
@@ -23,23 +20,6 @@ target_compile_features(torque_controller PUBLIC c_std_99 cxx_std_17)  # Require
 
 install(TARGETS torque_controller
   DESTINATION lib/${PROJECT_NAME})
-
-#add_executable(sandbox src/sandbox.cpp)
-#ament_target_dependencies(sandbox rclcpp std_msgs)
-#target_include_directories(torque_controller PUBLIC
-#  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#  $<INSTALL_INTERFACE:include>)
-#target_compile_features(sandbox PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-
-#install(TARGETS sandbox
-#  DESTINATION lib/${PROJECT_NAME})
-
-ament_python_install_package(${PROJECT_NAME})
-
-install(PROGRAMS
-  scripts/gain_scheduler_node.py
-  DESTINATION lib/${PROJECT_NAME}
-)
 
 install(DIRECTORY
   launch
