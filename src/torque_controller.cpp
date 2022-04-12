@@ -1,11 +1,28 @@
+// Copyright 2022 MBARI & Open Source Robotics Foundation, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include <chrono>
 #include <map>
 #include <cmath>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <memory>
 
 #include "rclcpp/rclcpp.hpp"
 
-//interp1d for rpm->winding current
+// interp1d for rpm->winding current
 #include "JustInterp/JustInterp.hpp"
 
 // pbsrv commands
@@ -39,7 +56,8 @@ struct PBTorqueControlPolicy
   PBTorqueControlPolicy()
    : Torque_constant(0.438F),
      N_Spec{0.0F, 300.0F, 600.0F, 1000.0F, 1700.0F, 4400.0F, 6790.0F},
-     Torque_Spec{0.0F, 0.0F, 0.8F, 2.9F, 5.6F, 9.8F, 16.6F},  // Matches old boost converter targets that have been deployed.
+     Torque_Spec{0.0F, 0.0F, 0.8F, 2.9F, 5.6F, 9.8F, 16.6F},  // Matches old boost converter
+                                                              // targets that have been deployed.
      I_Spec(Torque_Spec.size(), 0.0F)
   {
     update_params();
@@ -49,27 +67,27 @@ struct PBTorqueControlPolicy
   {
     std::transform(Torque_Spec.cbegin(), Torque_Spec.cend(),
                    I_Spec.begin(),
-                   [tc=Torque_constant](const float &ts){ return ts/tc; });
+                   [tc = Torque_constant](const float &ts){ return ts/tc; });
 
     interp1d.SetData(N_Spec, I_Spec);
   }
 
-  float WindingCurrentTarget(const float &rpm, const float &scale_factor, const float &retract_factor)
+  float WindingCurrentTarget(const float &rpm,
+                             const float &scale_factor,
+                             const float &retract_factor)
   {
     float N = fabs(rpm);
     float I = 0.0F;
 
-    if (N>=N_Spec.back())
+    if (N >= N_Spec.back())
     {
       I = I_Spec.back();
-    }
-    else
-    {
+    } else {
       I = interp1d(N);
     }
 
     I *= scale_factor;
-    if (rpm>0.0F)
+    if (rpm > 0.0F)
     {
       I *= -retract_factor;
     }
@@ -85,15 +103,21 @@ std::ostream& operator<<(std::ostream& os, const PBTorqueControlPolicy &policy)
   os << "\tTorque_constant: " << policy.Torque_constant << std::endl;
 
   os << "\tN_Spec: " << std::flush;
-  std::copy(policy.N_Spec.cbegin(), policy.N_Spec.cend(), std::ostream_iterator<float>(os, ","));
+  std::copy(policy.N_Spec.cbegin(),
+            policy.N_Spec.cend(),
+            std::ostream_iterator<float>(os, ","));
   os << "\b \b" << std::endl;
 
   os << "\tTorque_Spec: " << std::flush;
-  std::copy(policy.Torque_Spec.cbegin(), policy.Torque_Spec.cend(), std::ostream_iterator<float>(os, ","));
+  std::copy(policy.Torque_Spec.cbegin(),
+            policy.Torque_Spec.cend(),
+            std::ostream_iterator<float>(os, ","));
   os << "\b \b" << std::endl;
 
   os << "\tI_Spec: " << std::flush;
-  std::copy(policy.I_Spec.cbegin(), policy.I_Spec.cend(), std::ostream_iterator<float>(os, ","));
+  std::copy(policy.I_Spec.cbegin(),
+            policy.I_Spec.cend(),
+            std::ostream_iterator<float>(os, ","));
   os << "\b \b" << std::endl;
 
   return os;
@@ -109,8 +133,10 @@ public:
   {
     set_params();
 
-    pack_rate_client_ = this->create_client<buoy_msgs::srv::PCPackRateCommand>("/pc_pack_rate_command");
-    wind_curr_client_ = this->create_client<buoy_msgs::srv::PCWindCurrCommand>("/pc_wind_curr_command");
+    pack_rate_client_ = \
+      this->create_client<buoy_msgs::srv::PCPackRateCommand>("/pc_pack_rate_command");
+    wind_curr_client_ = \
+      this->create_client<buoy_msgs::srv::PCWindCurrCommand>("/pc_wind_curr_command");
 
     bool found = wait_for_service(pack_rate_client_, "/pc_pack_rate_command");
     found &= wait_for_service(wind_curr_client_, "/pc_wind_curr_command");
@@ -124,11 +150,9 @@ public:
 
     power_data_sub_ = this->create_subscription<buoy_msgs::msg::PCRecord>("/power_data", 1,
         std::bind(&PBTorqueController::rpm_callback, this, _1));
-
   }
 
 private:
-
   template <class T>
   bool wait_for_service(T &client, const std::string &service)
   {
@@ -153,11 +177,13 @@ private:
     this->declare_parameter("Torque_constant", policy_.Torque_constant);
     policy_.Torque_constant = this->get_parameter("Torque_constant").as_double();
 
-    this->declare_parameter("N_Spec", std::vector<double>(policy_.N_Spec.begin(), policy_.N_Spec.end()));
+    this->declare_parameter("N_Spec", std::vector<double>(policy_.N_Spec.begin(),
+                                                          policy_.N_Spec.end()));
     std::vector<double> temp_double_arr = this->get_parameter("N_Spec").as_double_array();
     policy_.N_Spec.assign(temp_double_arr.begin(), temp_double_arr.end());
 
-    this->declare_parameter("Torque_Spec", std::vector<double>(policy_.Torque_Spec.begin(), policy_.Torque_Spec.end()));
+    this->declare_parameter("Torque_Spec", std::vector<double>(policy_.Torque_Spec.begin(),
+                                                               policy_.Torque_Spec.end()));
     temp_double_arr = this->get_parameter("Torque_Spec").as_double_array();
     policy_.Torque_Spec.assign(temp_double_arr.begin(), temp_double_arr.end());
 
@@ -170,26 +196,24 @@ private:
     auto request = std::make_shared<buoy_msgs::srv::PCPackRateCommand::Request>();
     request->rate_hz = 50;
 
-    using RateServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::PCPackRateCommand>::SharedFuture;
+    using RateServiceResponseFuture = \
+      rclcpp::Client<buoy_msgs::srv::PCPackRateCommand>::SharedFuture;
     auto pack_rate_response_callback = [this](RateServiceResponseFuture future)
     {
-      if (future.get()->result.value==future.get()->result.OK)
+      if (future.get()->result.value == future.get()->result.OK)
       {
         RCLCPP_INFO(rclcpp::get_logger("pb_torque_controller"),
                     "Successfully set /pc_pack_rate_command to 50Hz");
         this->cmd_start_ = this->sub_start_ = this->now();
-      }
-      else
-      {
+      } else {
         RCLCPP_ERROR(rclcpp::get_logger("pb_torque_controller"),
                      "Failed to set /pc_pack_rate_command to 50Hz: received error code [[ %s ]]",
                      pbsrv_enum2str[future.get()->result.value].c_str());
-        //TODO: should we shutdown?
+        // TODO(andermi): should we shutdown?
       }
     };
 
     auto response = pack_rate_client_->async_send_request(request, pack_rate_response_callback);
-
   }
 
   void rpm_callback(const buoy_msgs::msg::PCRecord &power)
@@ -198,38 +222,34 @@ private:
 
     const float I = policy_.WindingCurrentTarget(power.rpm, power.scale, power.retract);
 
-    //RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), rosidl_generator_traits::to_yaml(power));
-    //RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), "power_data -- status: " << power.status);
-    RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), "power_data -- rpm: " << power.rpm);
-    //RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), "power_data -- bias_current: " << power.bias_current);
-    //RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), "power_data -- scale_factor: " << power.scale);
-    //RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), "power_data -- retract_factor: " << power.retract);
-    RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), "power_data -- I: " << power.target_a);
-    RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"), "torque_controller -- I: " << I);
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"),
+                       "power_data -- rpm: " << power.rpm);
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"),
+                       "power_data -- I: " << power.target_a);
+    RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"),
+                       "torque_controller -- I: " << I);
 
     auto request = std::make_shared<buoy_msgs::srv::PCWindCurrCommand::Request>();
     request->wind_curr = I;
 
-    using WindCurrServiceResponseFuture = rclcpp::Client<buoy_msgs::srv::PCWindCurrCommand>::SharedFuture;
+    using WindCurrServiceResponseFuture = \
+      rclcpp::Client<buoy_msgs::srv::PCWindCurrCommand>::SharedFuture;
     auto wind_curr_response_callback = [this](WindCurrServiceResponseFuture future)
     {
-      if (future.get()->result.value==future.get()->result.OK)
+      if (future.get()->result.value == future.get()->result.OK)
       {
         RCLCPP_INFO(rclcpp::get_logger("pb_torque_controller"),
                     "Successfully set /pc_wind_curr_command");
         this->hz(std::string("command_rate"), cmd_count_, cmd_start_);
-      }
-      else
-      {
+      } else {
         RCLCPP_INFO(rclcpp::get_logger("pb_torque_controller"),
                     "Failed to set /pc_wind_curr_command: received error code [[ %s ]]",
                     pbsrv_enum2str[future.get()->result.value].c_str());
-        //TODO: should we shutdown?
+        // TODO(andermi): should we shutdown?
       }
     };
 
     auto response = wind_curr_client_->async_send_request(request, wind_curr_response_callback);
-
   }
 
   void hz(const std::string &type, uint16_t &count, rclcpp::Time &start)
@@ -239,15 +259,12 @@ private:
     {
       count = 0U;
       start = this->now();
-    }
-    else
-    {
+    } else {
       rclcpp::Time now = this->now();
       float elapsed_sec = ((now-start).nanoseconds()/1e9);
       RCLCPP_INFO_STREAM(rclcpp::get_logger("pb_torque_controller"),
                          type << " : " << count/elapsed_sec);
     }
-
   }
 
   PBTorqueControlPolicy policy_;
