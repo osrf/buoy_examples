@@ -7,48 +7,21 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
-
-#pragma once
-
-/********************************************************************************
-/ MIT License
-/
-/ Copyright (c) 2021 alexander-valov
-
-/ Permission is hereby granted, free of charge, to any person obtaining a copy
-/ of this software and associated documentation files (the "Software"), to deal
-/ in the Software without restriction, including without limitation the rights
-/ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-/ copies of the Software, and to permit persons to whom the Software is
-/ furnished to do so, subject to the following conditions:
-
-/ The above copyright notice and this permission notice shall be included in all
-/ copies or substantial portions of the Software.
-
-/ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-/ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-/ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-/ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-/ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-/ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-/ SOFTWARE.
-********************************************************************************/
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 // JustInterp repo:
 // https://github.com/alexander-valov/JustInterp.git
 
-
+#pragma once
 
 // #include "JustInterp/Utils.hpp"
 
@@ -207,10 +180,10 @@ public:
 
     /********************************************************************
      * @brief Set known data points and values.
-     * 
+     *
      * Container must have real-type values and the following methods:
      * data(), size(), begin(), end()
-     * 
+     *
      * @param[in] x Known points array
      * @param[in] y Known values array
      *********************************************************************/
@@ -243,10 +216,10 @@ public:
 
     /********************************************************************
      * @brief Calculate interpolation function at each point of given array.
-     * 
+     *
      * Container must have real-type values and the following methods:
      * data(), size(), begin(), end()
-     * 
+     *
      * @param[in] x Array of points to interpolate
      * @return std::vector<Real> of interpolated values
      *********************************************************************/
@@ -298,7 +271,7 @@ private:
 private:
 
     std::vector<Real> xData_, yData_;
-    
+
 };
 
 }
@@ -353,10 +326,10 @@ public:
 
     /********************************************************************
      * @brief Set known grid points and values.
-     * 
+     *
      * Container must have real-type values and the following methods:
      * data(), size(), begin(), end()
-     * 
+     *
      * @param[in] x_1d Grid points along x-axis
      * @param[in] y_1d Grid points along y-axis
      * @param[in] z_all All node values stored as 1d array
@@ -400,10 +373,10 @@ public:
     /********************************************************************
      * Calculate interpolation function at each given points.
      * If some points are outside the data extrapolation is performed.
-     * 
+     *
      * Container must have real-type values and the following methods:
      * data(), size(), begin(), end()
-     * 
+     *
      * @param[in] x Array of x-coordinate. x.size() must be equals y.size()
      * @param[in] y Array of y-coordinate. x.size() must be equals y.size()
      * @return std::vector<Real> of interpolated values
@@ -422,13 +395,13 @@ public:
     }
 
     /********************************************************************
-     * Calculate interpolation function for 2D grid. 2D grid is defined 
-     * by two 1D arrays of coordinates along the x-axis and y-axis respectively. 
+     * Calculate interpolation function for 2D grid. 2D grid is defined
+     * by two 1D arrays of coordinates along the x-axis and y-axis respectively.
      * 1D result array is stored according to StorageOrder_.
-     * 
+     *
      * Container must have real-type values and the following methods:
      * data(), size(), begin(), end()
-     * 
+     *
      * @param[in] x_1d Grid coordinates along x-axis
      * @param[in] y_1d Grid coordinates along y-axis
      * @return std::vector<Real> of interpolated values stored according to StorageOrder_
@@ -465,9 +438,9 @@ private:
     /********************************************************************
      * Calculate interpolation function at the given point (x, y)
      * for given rectangle (ix, iy) - left-bottom corner index
-     * 
+     *
      * @see https://en.wikipedia.org/wiki/Bilinear_interpolation
-     * 
+     *
      * @param[in] x X-coordinate
      * @param[in] y Y-coordinate
      * @return Interpolated value
@@ -608,7 +581,7 @@ public:
     /********************************************************************
      * @brief Set known data points and values.
      * @param[in] x_1d 1D array of points along x-axis
-     * @param[in] y_1d_arrays Array of 1D arrays of points along y-axis 
+     * @param[in] y_1d_arrays Array of 1D arrays of points along y-axis
      *                        for corresponding point from x_1d
      * @param[in] z_1d_arrays Array of 1D arrays of values for corresponding
      *                        points from x_1d and y_1d_arrays
@@ -682,10 +655,10 @@ public:
     /********************************************************************
      * Calculate interpolation function at each given points.
      * If some points are outside the data extrapolation is performed.
-     * 
+     *
      * Container must have real-type values and the following methods:
      * data(), size(), begin(), end()
-     * 
+     *
      * @param[in] x Array of x-coordinate. x.size() must be equals y.size()
      * @param[in] y Array of y-coordinate. x.size() must be equals y.size()
      * @return std::vector<Real> of interpolated values

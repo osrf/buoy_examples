@@ -1,6 +1,13 @@
-Any contribution that you make to this repository will
-be under the Apache 2 License, as dictated by that
-[license](http://www.apache.org/licenses/LICENSE-2.0.html):
+# Contribution Guidelines
+
+The present document provides a set of guidelines to which contributors must adhere.
+
+- [Contribution Guidelines](#contribution-guidelines)
+  - [Contributions Licensing](#contributions-licensing)
+
+## Contributions Licensing
+
+Any contribution that you make to this repository will be under the Apache 2 License, as dictated by that [license](http://www.apache.org/licenses/LICENSE-2.0.html):
 
 ~~~
 5. Submission of Contributions. Unless You explicitly state otherwise,
@@ -11,3 +18,4 @@ be under the Apache 2 License, as dictated by that
    the terms of any separate license agreement you may have executed
    with Licensor regarding such Contributions.
 ~~~
+
