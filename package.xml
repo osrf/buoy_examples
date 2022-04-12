@@ -11,7 +11,7 @@
   <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <depend>rclcpp</depend>
-  <depend>rclcpy</depend>
+  <depend>rclpy</depend>
   <depend>buoy_msgs</depend>
   <depend>std_msgs</depend>
 
