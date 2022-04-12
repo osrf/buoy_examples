@@ -33,7 +33,7 @@ void PBTorqueController::power_callback(const buoy_msgs::msg::PCRecord &data)
 }
 
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
 

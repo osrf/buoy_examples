@@ -17,6 +17,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
     ld = LaunchDescription()
     config = os.path.join(
@@ -25,11 +26,11 @@ def generate_launch_description():
         'pb_torque_controller.yaml'
         )
 
-    node=Node(
-        package = 'buoy_examples',
-        name = 'pb_torque_controller',
-        executable = 'torque_controller',
-        parameters = [config]
+    node = Node(
+        package='buoy_examples',
+        name='pb_torque_controller',
+        executable='torque_controller',
+        parameters=[config]
     )
 
     ld.add_action(node)
