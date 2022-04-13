@@ -490,6 +490,7 @@ private:
   template<class T>
   bool wait_for_service(T & client, const std::string & service)
   {
+    // NOLINTNEXTLINE
     using namespace std::chrono_literals;
     while (!client->wait_for_service(1s)) {
       if (!rclcpp::ok()) {
