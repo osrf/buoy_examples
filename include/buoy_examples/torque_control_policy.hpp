@@ -1,17 +1,31 @@
-#ifndef TORQUE_CONTROL_POLICY_HPP_
-#define TORQUE_CONTROL_POLICY_HPP_
+// Copyright 2022 Open Source Robotics Foundation, Inc. and Monterey Bay Aquarium Research Institute
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#ifndef BUOY_EXAMPLES__TORQUE_CONTROL_POLICY_HPP_
+#define BUOY_EXAMPLES__TORQUE_CONTROL_POLICY_HPP_
 
 /********************************************************
 / User-space to define control policy and param loading /
 ********************************************************/
 
-//#include <cmath>
-
-//interp1d for rpm->winding current
-#include "JustInterp/JustInterp.hpp"
+#include <vector>
+#include <algorithm>
 
 #include "buoy_examples/torque_controller.hpp"
 
+// interp1d for rpm->winding current
+#include "JustInterp/JustInterp.hpp"
 
 struct PBTorqueControlPolicy
 {
@@ -24,7 +38,8 @@ struct PBTorqueControlPolicy
   PBTorqueControlPolicy()
    : Torque_constant(0.438F),
      N_Spec{0.0F, 300.0F, 600.0F, 1000.0F, 1700.0F, 4400.0F, 6790.0F},
-     Torque_Spec{0.0F, 0.0F, 0.8F, 2.9F, 5.6F, 9.8F, 16.6F},  // Matches old boost converter targets that have been deployed.
+     Torque_Spec{0.0F, 0.0F, 0.8F, 2.9F, 5.6F, 9.8F, 16.6F},  // Matches old boost converter targets
+                                                              // that have been deployed.
      I_Spec(Torque_Spec.size(), 0.0F)
   {
     update_params();
@@ -34,28 +49,28 @@ struct PBTorqueControlPolicy
   {
     std::transform(Torque_Spec.cbegin(), Torque_Spec.cend(),
                    I_Spec.begin(),
-                   [tc=Torque_constant](const float &ts){ return ts/tc; });
+                   [tc = Torque_constant](const float &ts){ return ts/tc; });
 
     interp1d.SetData(N_Spec, I_Spec);
   }
 
-  //TODO: find a way to make this generic...
-  float WindingCurrentTarget(const float &rpm, const float &scale_factor, const float &retract_factor)
+  // TODO(andermi): find a way to make this generic...
+  float WindingCurrentTarget(const float &rpm,
+                             const float &scale_factor,
+                             const float &retract_factor)
   {
     float N = fabs(rpm);
     float I = 0.0F;
 
-    if (N>=N_Spec.back())
+    if (N >= N_Spec.back())
     {
       I = I_Spec.back();
-    }
-    else
-    {
+    } else {
       I = interp1d(N);
     }
 
     I *= scale_factor;
-    if (rpm>0.0F)
+    if (rpm > 0.0F)
     {
       I *= -retract_factor;
     }
@@ -75,7 +90,9 @@ std::ostream& operator<<(std::ostream& os, const PBTorqueControlPolicy &policy)
   os << "\b \b" << std::endl;
 
   os << "\tTorque_Spec: " << std::flush;
-  std::copy(policy.Torque_Spec.cbegin(), policy.Torque_Spec.cend(), std::ostream_iterator<float>(os, ","));
+  std::copy(policy.Torque_Spec.cbegin(),
+            policy.Torque_Spec.cend(),
+            std::ostream_iterator<float>(os, ","));
   os << "\b \b" << std::endl;
 
   os << "\tI_Spec: " << std::flush;
@@ -88,17 +105,16 @@ std::ostream& operator<<(std::ostream& os, const PBTorqueControlPolicy &policy)
 
 void PBTorqueController::set_params()
 {
-  //this->declare_parameter("with_power", false);
-  //this->with_power = this->get_parameter("with_power").as_bool();
-
   this->declare_parameter("torque_constant", policy_->Torque_constant);
   policy_->Torque_constant = this->get_parameter("torque_constant").as_double();
 
-  this->declare_parameter("n_spec", std::vector<double>(policy_->N_Spec.begin(), policy_->N_Spec.end()));
+  this->declare_parameter("n_spec", std::vector<double>(policy_->N_Spec.begin(),
+                                                        policy_->N_Spec.end()));
   std::vector<double> temp_double_arr = this->get_parameter("n_spec").as_double_array();
   policy_->N_Spec.assign(temp_double_arr.begin(), temp_double_arr.end());
 
-  this->declare_parameter("torque_spec", std::vector<double>(policy_->Torque_Spec.begin(), policy_->Torque_Spec.end()));
+  this->declare_parameter("torque_spec", std::vector<double>(policy_->Torque_Spec.begin(),
+                                                             policy_->Torque_Spec.end()));
   temp_double_arr = this->get_parameter("torque_spec").as_double_array();
   policy_->Torque_Spec.assign(temp_double_arr.begin(), temp_double_arr.end());
 
@@ -106,5 +122,4 @@ void PBTorqueController::set_params()
   RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()), *policy_);
 }
 
-
-#endif //TORQUE_CONTROL_POLICY_HPP_
+#endif  // BUOY_EXAMPLES__TORQUE_CONTROL_POLICY_HPP_
