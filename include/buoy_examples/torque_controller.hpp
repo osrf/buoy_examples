@@ -19,13 +19,13 @@
 #include <string>
 #include <memory>
 
-#include "buoy_examples/controller.hpp"
+#include "buoy_msgs/interface.hpp"
 
 
 // forward declare
 struct PBTorqueControlPolicy;  // defined by user in torque_control_policy.hpp
 
-class PBTorqueController final : public PBInterface::PBController<PBTorqueController>
+class PBTorqueController final : public buoy_msgs::Interface<PBTorqueController>
 {
 public:
   explicit PBTorqueController(const std::string & node_name);
