@@ -19,7 +19,7 @@
 
 
 PBTorqueController::PBTorqueController(const std::string & node_name)
-: PBInterface::PBController<PBTorqueController>(node_name)
+: buoy_msgs::Interface<PBTorqueController>(node_name)
 {
   policy_.reset(new PBTorqueControlPolicy());
   set_params();
