@@ -18,8 +18,8 @@
 #include "buoy_examples/torque_control_policy.hpp"
 
 
-PBTorqueController::PBTorqueController(const std::string &node_name)
-  : PBInterface::PBController<PBTorqueController>(node_name)
+PBTorqueController::PBTorqueController(const std::string & node_name)
+: PBInterface::PBController<PBTorqueController>(node_name)
 {
   policy_.reset(new PBTorqueControlPolicy());
   set_params();
@@ -27,10 +27,10 @@ PBTorqueController::PBTorqueController(const std::string &node_name)
   set_pc_pack_rate();
 }
 
-void PBTorqueController::power_callback(const buoy_msgs::msg::PCRecord &data)
+void PBTorqueController::power_callback(const buoy_msgs::msg::PCRecord & data)
 {
   auto request = std::make_shared<buoy_msgs::srv::PCWindCurrCommand::Request>();
-  request->wind_curr = policy_->WindingCurrentTarget(data.rpm, data.scale, data.retract);;
+  request->wind_curr = policy_->WindingCurrentTarget(data.rpm, data.scale, data.retract);
 
   auto response = pc_wind_curr_client_->async_send_request(request, pc_wind_curr_callback);
 }

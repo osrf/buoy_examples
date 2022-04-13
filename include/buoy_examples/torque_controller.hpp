@@ -25,17 +25,17 @@
 // forward declare
 struct PBTorqueControlPolicy;  // defined by user in torque_control_policy.hpp
 
-class PBTorqueController final: public PBInterface::PBController<PBTorqueController>
+class PBTorqueController final : public PBInterface::PBController<PBTorqueController>
 {
 public:
-  explicit PBTorqueController(const std::string &node_name);
+  explicit PBTorqueController(const std::string & node_name);
   ~PBTorqueController() = default;
 
 private:
   friend CRTP;  // syntactic sugar (see https://stackoverflow.com/a/58435857/9686600)
 
   void set_params() final;  // defined by user in torque_control_policy.hpp
-  void power_callback(const buoy_msgs::msg::PCRecord &data);
+  void power_callback(const buoy_msgs::msg::PCRecord & data);
 
   std::unique_ptr<PBTorqueControlPolicy> policy_;
 };

@@ -73,9 +73,9 @@ namespace PBInterface
 using std::placeholders::_1;
 
 std::map<int8_t, std::string> pbsrv_enum2str = {{0, "OK"},
-                                                {-1, "BAD_SOCK"},
-                                                {-2, "BAD_OPTS"},
-                                                {-3, "BAD_INPUT"}};
+  {-1, "BAD_SOCK"},
+  {-2, "BAD_OPTS"},
+  {-3, "BAD_INPUT"}};
 
 
 template<class ControllerImplCRTP>
@@ -84,8 +84,8 @@ class PBController : public rclcpp::Node
 public:
   using CRTP = PBController;  // syntactic sugar for friend class
                               // see https://stackoverflow.com/a/58435857/9686600
-  explicit PBController(const std::string &node_name)
-    : Node(node_name)
+  explicit PBController(const std::string & node_name)
+  : Node(node_name)
   {
     pc_pack_rate_client_ = \
       this->create_client<buoy_msgs::srv::PCPackRateCommand>("/pc_pack_rate_command");
@@ -127,7 +127,7 @@ public:
       this->create_client<buoy_msgs::srv::TFSetCurrLimCommand>("/tf_set_curr_lim_command");
     tf_set_state_machine_client_ = \
       this->create_client<buoy_msgs::srv::TFSetStateMachineCommand>(
-        "/tf_set_state_machine_command");
+      "/tf_set_state_machine_command");
     tf_watch_dog_client_ = \
       this->create_client<buoy_msgs::srv::TFWatchDogCommand>("/tf_watch_dog_command");
     tf_reset_client_ = this->create_client<buoy_msgs::srv::TFResetCommand>("/tf_reset_command");
@@ -159,63 +159,62 @@ public:
     found &= wait_for_service(tf_watch_dog_client_, "/tf_watch_dog_command");
     found &= wait_for_service(tf_reset_client_, "/tf_reset_command");
 
-    if (!found)
-    {
+    if (!found) {
       RCLCPP_ERROR(rclcpp::get_logger(node_name), "Did not find required services");
       return;
     }
 
     bender_callback = service_response_callback<BenderServiceCallback,
-                                                BenderServiceResponseFuture>();
+        BenderServiceResponseFuture>();
     bc_reset_callback = service_response_callback<BCResetServiceCallback,
-                                                  BCResetServiceResponseFuture>();
+        BCResetServiceResponseFuture>();
     pump_callback = service_response_callback<PumpServiceCallback, PumpServiceResponseFuture>();
     valve_callback = service_response_callback<ValveServiceCallback, ValveServiceResponseFuture>();
     tether_callback = service_response_callback<TetherServiceCallback,
-                                                TetherServiceResponseFuture>();
+        TetherServiceResponseFuture>();
     sc_reset_callback = service_response_callback<SCResetServiceCallback,
-                                                  SCResetServiceResponseFuture>();
+        SCResetServiceResponseFuture>();
     sc_pack_rate_callback = service_response_callback<SCPackRateServiceCallback,
-                                                      SCPackRateServiceResponseFuture>();
+        SCPackRateServiceResponseFuture>();
     pc_scale_callback = service_response_callback<PCScaleServiceCallback,
-                                                  PCScaleServiceResponseFuture>();
+        PCScaleServiceResponseFuture>();
     pc_retract_callback = service_response_callback<PCRetractServiceCallback,
-                                                    PCRetractServiceResponseFuture>();
+        PCRetractServiceResponseFuture>();
     pc_v_targ_max_callback = service_response_callback<PCVTargMaxServiceCallback,
-                                                       PCVTargMaxServiceResponseFuture>();
+        PCVTargMaxServiceResponseFuture>();
     pc_charge_curr_lim_callback = service_response_callback<PCChargeCurrLimServiceCallback,
-                                                            PCChargeCurrLimServiceResponseFuture>();
+        PCChargeCurrLimServiceResponseFuture>();
     pc_batt_switch_callback = service_response_callback<PCBattSwitchServiceCallback,
-                                                        PCBattSwitchServiceResponseFuture>();
+        PCBattSwitchServiceResponseFuture>();
     gain_callback = service_response_callback<GainServiceCallback,
-                                              GainServiceResponseFuture>();
+        GainServiceResponseFuture>();
     pc_std_dev_targ_callback = service_response_callback<PCStdDevTargServiceCallback,
-                                                         PCStdDevTargServiceResponseFuture>();
+        PCStdDevTargServiceResponseFuture>();
     pc_draw_curr_lim_callback = service_response_callback<PCDrawCurrLimServiceCallback,
-                                                          PCDrawCurrLimServiceResponseFuture>();
+        PCDrawCurrLimServiceResponseFuture>();
     pc_wind_curr_callback = service_response_callback<PCWindCurrServiceCallback,
-                                                      PCWindCurrServiceResponseFuture>();
+        PCWindCurrServiceResponseFuture>();
     pc_bias_curr_callback = service_response_callback<PCBiasCurrServiceCallback,
-                                                      PCBiasCurrServiceResponseFuture>();
+        PCBiasCurrServiceResponseFuture>();
     pc_pack_rate_callback = service_response_callback<PCPackRateServiceCallback,
-                                                      PCPackRateServiceResponseFuture>();
+        PCPackRateServiceResponseFuture>();
     tf_set_pos_callback = service_response_callback<TFSetPosServiceCallback,
-                                                    TFSetPosServiceResponseFuture>();
+        TFSetPosServiceResponseFuture>();
     tf_set_actual_pos_callback = service_response_callback<TFSetActualPosServiceCallback,
-                                                           TFSetActualPosServiceResponseFuture>();
+        TFSetActualPosServiceResponseFuture>();
     tf_set_mode_callback = service_response_callback<TFSetModeServiceCallback,
-                                                     TFSetModeServiceResponseFuture>();
+        TFSetModeServiceResponseFuture>();
     tf_set_charge_mode_callback = service_response_callback<TFSetChargeModeServiceCallback,
-                                                            TFSetChargeModeServiceResponseFuture>();
+        TFSetChargeModeServiceResponseFuture>();
     tf_set_curr_lim_callback = service_response_callback<TFSetCurrLimServiceCallback,
-                                                         TFSetCurrLimServiceResponseFuture>();
+        TFSetCurrLimServiceResponseFuture>();
     tf_set_state_machine_callback = \
       service_response_callback<TFSetStateMachineServiceCallback,
-                                TFSetStateMachineServiceResponseFuture>();
+        TFSetStateMachineServiceResponseFuture>();
     tf_watchdog_callback = service_response_callback<TFWatchDogServiceCallback, \
-                                                     TFWatchDogServiceResponseFuture>();
+        TFWatchDogServiceResponseFuture>();
     tf_reset_callback = service_response_callback<TFResetServiceCallback,
-                                                  TFResetServiceResponseFuture>();
+        TFResetServiceResponseFuture>();
 
     setup_subscribers();
   }
@@ -224,65 +223,77 @@ public:
   // implementation; if they did not define one, the subscriber will not be set up
   void setup_subscribers()
   {
-    if (&ControllerImplCRTP::ahrs_callback == &PBController::ahrs_callback) {}
-    else
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()),
-                                            "Subscribing to XBRecord on '/ahrs_data'");
-      ahrs_data_sub_ = this->create_subscription<buoy_msgs::msg::XBRecord>("/ahrs_data", 1,
-          std::bind(&ControllerImplCRTP::ahrs_callback,
-                    static_cast<ControllerImplCRTP*>(this), _1));
+    if (&ControllerImplCRTP::ahrs_callback == &PBController::ahrs_callback) {
+    } else {
+      RCLCPP_INFO_STREAM(
+        rclcpp::get_logger(this->get_name()),
+        "Subscribing to XBRecord on '/ahrs_data'");
+      ahrs_data_sub_ = this->create_subscription<buoy_msgs::msg::XBRecord>(
+        "/ahrs_data", 1,
+        std::bind(
+          &ControllerImplCRTP::ahrs_callback,
+          static_cast<ControllerImplCRTP *>(this), _1));
     }
 
-    if (&ControllerImplCRTP::battery_callback == &PBController::battery_callback) {}
-    else
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()),
-                         "Subscribing to BCRecord on '/battery_data'");
-      battery_data_sub_ = this->create_subscription<buoy_msgs::msg::BCRecord>("/battery_data", 1,
-          std::bind(&ControllerImplCRTP::battery_callback,
-                    static_cast<ControllerImplCRTP*>(this), _1));
+    if (&ControllerImplCRTP::battery_callback == &PBController::battery_callback) {
+    } else {
+      RCLCPP_INFO_STREAM(
+        rclcpp::get_logger(this->get_name()),
+        "Subscribing to BCRecord on '/battery_data'");
+      battery_data_sub_ = this->create_subscription<buoy_msgs::msg::BCRecord>(
+        "/battery_data", 1,
+        std::bind(
+          &ControllerImplCRTP::battery_callback,
+          static_cast<ControllerImplCRTP *>(this), _1));
     }
 
-    if (&ControllerImplCRTP::spring_callback == &PBController::spring_callback) {}
-    else
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()),
-                         "Subscribing to SCRecord on '/spring_data'");
-      spring_data_sub_ = this->create_subscription<buoy_msgs::msg::SCRecord>("/spring_data", 1,
-          std::bind(&ControllerImplCRTP::spring_callback,
-                    static_cast<ControllerImplCRTP*>(this), _1));
+    if (&ControllerImplCRTP::spring_callback == &PBController::spring_callback) {
+    } else {
+      RCLCPP_INFO_STREAM(
+        rclcpp::get_logger(this->get_name()),
+        "Subscribing to SCRecord on '/spring_data'");
+      spring_data_sub_ = this->create_subscription<buoy_msgs::msg::SCRecord>(
+        "/spring_data", 1,
+        std::bind(
+          &ControllerImplCRTP::spring_callback,
+          static_cast<ControllerImplCRTP *>(this), _1));
     }
 
-    if (&ControllerImplCRTP::power_callback == &PBController::power_callback) {}
-    else
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()),
-                         "Subscribing to PCRecord on '/power_data'");
-      power_data_sub_ = this->create_subscription<buoy_msgs::msg::PCRecord>("/power_data", 1,
-          std::bind(&ControllerImplCRTP::power_callback,
-                    static_cast<ControllerImplCRTP*>(this), _1));
+    if (&ControllerImplCRTP::power_callback == &PBController::power_callback) {
+    } else {
+      RCLCPP_INFO_STREAM(
+        rclcpp::get_logger(this->get_name()),
+        "Subscribing to PCRecord on '/power_data'");
+      power_data_sub_ = this->create_subscription<buoy_msgs::msg::PCRecord>(
+        "/power_data", 1,
+        std::bind(
+          &ControllerImplCRTP::power_callback,
+          static_cast<ControllerImplCRTP *>(this), _1));
     }
 
-    if (&ControllerImplCRTP::trefoil_callback == &PBController::trefoil_callback) {}
-    else
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()),
-                         "Subscribing to TFRecord on '/trefoil_data'");
-      trefoil_data_sub_ = this->create_subscription<buoy_msgs::msg::TFRecord>("/trefoil_data", 1,
-          std::bind(&ControllerImplCRTP::trefoil_callback,
-                    static_cast<ControllerImplCRTP*>(this), _1));
+    if (&ControllerImplCRTP::trefoil_callback == &PBController::trefoil_callback) {
+    } else {
+      RCLCPP_INFO_STREAM(
+        rclcpp::get_logger(this->get_name()),
+        "Subscribing to TFRecord on '/trefoil_data'");
+      trefoil_data_sub_ = this->create_subscription<buoy_msgs::msg::TFRecord>(
+        "/trefoil_data", 1,
+        std::bind(
+          &ControllerImplCRTP::trefoil_callback,
+          static_cast<ControllerImplCRTP *>(this), _1));
     }
 
-    if (&ControllerImplCRTP::powerbuoy_callback == &PBController::powerbuoy_callback) {}
-    else
-    {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger(this->get_name()),
-                         "Subscribing to PBRecord on '/powerbuoy_data'");
+    if (&ControllerImplCRTP::powerbuoy_callback == &PBController::powerbuoy_callback) {
+    } else {
+      RCLCPP_INFO_STREAM(
+        rclcpp::get_logger(this->get_name()),
+        "Subscribing to PBRecord on '/powerbuoy_data'");
       powerbuoy_data_sub_ = \
-        this->create_subscription<buoy_msgs::msg::PBRecord>("/powerbuoy_data", 1,
-          std::bind(&ControllerImplCRTP::powerbuoy_callback,
-                    static_cast<ControllerImplCRTP*>(this), _1));
+        this->create_subscription<buoy_msgs::msg::PBRecord>(
+        "/powerbuoy_data", 1,
+        std::bind(
+          &ControllerImplCRTP::powerbuoy_callback,
+          static_cast<ControllerImplCRTP *>(this), _1));
     }
   }
 
@@ -453,45 +464,45 @@ protected:
   rclcpp::Client<buoy_msgs::srv::TFWatchDogCommand>::SharedPtr tf_watch_dog_client_;
   rclcpp::Client<buoy_msgs::srv::TFResetCommand>::SharedPtr tf_reset_client_;
 
-
 private:
   // generic service callback
   template<class CallbackType, class ServiceResponseFuture>
   CallbackType service_response_callback()
   {
     CallbackType callback = [this](ServiceResponseFuture future)
-    {
-      if (future.get()->result.value == future.get()->result.OK)
       {
-        RCLCPP_INFO(rclcpp::get_logger(this->get_name()),
-                    "Command Successful");
-      } else {
-        RCLCPP_INFO(rclcpp::get_logger(this->get_name()),
-                    "Command Failed: received error code [[ %s ]]",
-                    pbsrv_enum2str[future.get()->result.value].c_str());
-        // TODO(andermi): should we shutdown?
-      }
-    };
+        if (future.get()->result.value == future.get()->result.OK) {
+          RCLCPP_INFO(
+            rclcpp::get_logger(this->get_name()),
+            "Command Successful");
+        } else {
+          RCLCPP_INFO(
+            rclcpp::get_logger(this->get_name()),
+            "Command Failed: received error code [[ %s ]]",
+            pbsrv_enum2str[future.get()->result.value].c_str());
+          // TODO(andermi): should we shutdown?
+        }
+      };
 
     return callback;
   }
 
-  template <class T>
-  bool wait_for_service(T &client, const std::string &service)
+  template<class T>
+  bool wait_for_service(T & client, const std::string & service)
   {
     using namespace std::chrono_literals;
-    while (!client->wait_for_service(1s))
-    {
-      if (!rclcpp::ok())
-      {
-        RCLCPP_ERROR(rclcpp::get_logger(this->get_name()),
-                     "Interrupted while waiting for %s. Exiting.",
-                     service.c_str());
+    while (!client->wait_for_service(1s)) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(
+          rclcpp::get_logger(this->get_name()),
+          "Interrupted while waiting for %s. Exiting.",
+          service.c_str());
         return false;
       }
-      RCLCPP_INFO(rclcpp::get_logger(this->get_name()),
-                  "%s not available, still waiting...",
-                  service.c_str());
+      RCLCPP_INFO(
+        rclcpp::get_logger(this->get_name()),
+        "%s not available, still waiting...",
+        service.c_str());
     }
     return true;
   }

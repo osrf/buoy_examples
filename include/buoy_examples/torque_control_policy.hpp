@@ -36,42 +36,42 @@ struct PBTorqueControlPolicy
   JustInterp::LinearInterpolator<float> interp1d;
 
   PBTorqueControlPolicy()
-   : Torque_constant(0.438F),
-     N_Spec{0.0F, 300.0F, 600.0F, 1000.0F, 1700.0F, 4400.0F, 6790.0F},
-     Torque_Spec{0.0F, 0.0F, 0.8F, 2.9F, 5.6F, 9.8F, 16.6F},  // Matches old boost converter targets
+  : Torque_constant(0.438F),
+    N_Spec{0.0F, 300.0F, 600.0F, 1000.0F, 1700.0F, 4400.0F, 6790.0F},
+    Torque_Spec{0.0F, 0.0F, 0.8F, 2.9F, 5.6F, 9.8F, 16.6F},   // Matches old boost converter targets
                                                               // that have been deployed.
-     I_Spec(Torque_Spec.size(), 0.0F)
+    I_Spec(Torque_Spec.size(), 0.0F)
   {
     update_params();
   }
 
   void update_params()
   {
-    std::transform(Torque_Spec.cbegin(), Torque_Spec.cend(),
-                   I_Spec.begin(),
-                   [tc = Torque_constant](const float &ts){ return ts/tc; });
+    std::transform(
+      Torque_Spec.cbegin(), Torque_Spec.cend(),
+      I_Spec.begin(),
+      [tc = Torque_constant](const float & ts) {return ts / tc;});
 
     interp1d.SetData(N_Spec, I_Spec);
   }
 
   // TODO(andermi): find a way to make this generic...
-  float WindingCurrentTarget(const float &rpm,
-                             const float &scale_factor,
-                             const float &retract_factor)
+  float WindingCurrentTarget(
+    const float & rpm,
+    const float & scale_factor,
+    const float & retract_factor)
   {
     float N = fabs(rpm);
     float I = 0.0F;
 
-    if (N >= N_Spec.back())
-    {
+    if (N >= N_Spec.back()) {
       I = I_Spec.back();
     } else {
       I = interp1d(N);
     }
 
     I *= scale_factor;
-    if (rpm > 0.0F)
-    {
+    if (rpm > 0.0F) {
       I *= -retract_factor;
     }
 
@@ -79,7 +79,7 @@ struct PBTorqueControlPolicy
   }
 };
 
-std::ostream& operator<<(std::ostream& os, const PBTorqueControlPolicy &policy)
+std::ostream & operator<<(std::ostream & os, const PBTorqueControlPolicy & policy)
 {
   os << "PBTorqueControlPolicy:" << std::endl;
 
@@ -90,9 +90,10 @@ std::ostream& operator<<(std::ostream& os, const PBTorqueControlPolicy &policy)
   os << "\b \b" << std::endl;
 
   os << "\tTorque_Spec: " << std::flush;
-  std::copy(policy.Torque_Spec.cbegin(),
-            policy.Torque_Spec.cend(),
-            std::ostream_iterator<float>(os, ","));
+  std::copy(
+    policy.Torque_Spec.cbegin(),
+    policy.Torque_Spec.cend(),
+    std::ostream_iterator<float>(os, ","));
   os << "\b \b" << std::endl;
 
   os << "\tI_Spec: " << std::flush;
@@ -108,13 +109,17 @@ void PBTorqueController::set_params()
   this->declare_parameter("torque_constant", policy_->Torque_constant);
   policy_->Torque_constant = this->get_parameter("torque_constant").as_double();
 
-  this->declare_parameter("n_spec", std::vector<double>(policy_->N_Spec.begin(),
-                                                        policy_->N_Spec.end()));
+  this->declare_parameter(
+    "n_spec", std::vector<double>(
+      policy_->N_Spec.begin(),
+      policy_->N_Spec.end()));
   std::vector<double> temp_double_arr = this->get_parameter("n_spec").as_double_array();
   policy_->N_Spec.assign(temp_double_arr.begin(), temp_double_arr.end());
 
-  this->declare_parameter("torque_spec", std::vector<double>(policy_->Torque_Spec.begin(),
-                                                             policy_->Torque_Spec.end()));
+  this->declare_parameter(
+    "torque_spec", std::vector<double>(
+      policy_->Torque_Spec.begin(),
+      policy_->Torque_Spec.end()));
   temp_double_arr = this->get_parameter("torque_spec").as_double_array();
   policy_->Torque_Spec.assign(temp_double_arr.begin(), temp_double_arr.end());
 
