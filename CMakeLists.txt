@@ -8,6 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 find_package(buoy_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
@@ -19,6 +20,10 @@ target_include_directories(torque_controller PUBLIC
 target_compile_features(torque_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS torque_controller
+  DESTINATION lib/${PROJECT_NAME})
+
+install(PROGRAMS
+  scripts/torque_controller.py
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
