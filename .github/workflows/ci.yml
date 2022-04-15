@@ -1,0 +1,30 @@
+name: Build and test
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    name: Build and test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - ros-distro: "galactic"
+    container:
+      image: ubuntu:latest
+    steps:
+      - name: Checkout buoy_examples
+        uses: actions/checkout@v2
+        with:
+          path: main
+      # Check out buoy_msgs explicitly until it's released
+      - name: Checkout buoy_msgs
+        uses: actions/checkout@v2
+        with:
+          repository: osrf/buoy_msgs
+          ref: main
+          path: buoy_msgs
+      - name: Build and Test
+        run: main/.github/workflows/build-and-test.sh
+        env:
+          ROS_DISTRO: ${{ matrix.ros-distro }}
