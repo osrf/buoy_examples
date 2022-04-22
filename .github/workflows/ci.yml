@@ -5,13 +5,13 @@ on: [push, pull_request]
 jobs:
   tests:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         include:
           - ros-distro: "galactic"
     container:
-      image: ubuntu:latest
+      image: ubuntu:20.04
     steps:
       - name: Checkout buoy_examples
         uses: actions/checkout@v2
