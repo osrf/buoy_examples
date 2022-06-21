@@ -1,0 +1,7 @@
+/pb_nl_bias_damping:
+  ros__parameters:
+    bias_damping:
+      position_breaks: [0.0, 0.5, 1.015, 1.5, 2.03]
+      bias: [-20.0, 10.0, 0.0, -15.0, 20.0]
+      position_deadzone: [0.75, 1.25]
+

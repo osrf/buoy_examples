@@ -24,6 +24,7 @@ install(TARGETS torque_controller
 
 install(PROGRAMS
   scripts/torque_controller.py
+  scripts/bias_damping.py
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
