@@ -14,16 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import rclpy
-import numpy as np
-from scipy import interpolate
-
 from buoy_msgs.interface import Interface
-
 from buoy_msgs.srv import PCBiasCurrCommand
+import rclpy
+from scipy import interpolate
 
 
 class NLBiasDampingPolicy(object):
+
     def __init__(self):
         self.breaks = [0.0, 2.03]  # TODO(andermi) find suitable defaults (or leave this)
         self.bias = [0.0, 0.0]  # TODO(andermi) find suitable defaults (or leave this)
@@ -49,29 +47,29 @@ class NLBiasDampingPolicy(object):
 
 
 class NonLinearBiasDamping(Interface):
+
     def __init__(self):
-        super().__init__("pb_nl_bias_damping") #,
-                         # automatically_declare_parameters_from_overrides=True)
+        super().__init__('pb_nl_bias_damping')
         self.policy = NLBiasDampingPolicy()
         self.set_params()
         self.set_sc_pack_rate_param()
 
     def set_params(self):
-        self.declare_parameter("bias_damping.position_breaks", self.policy.breaks)
-        self.declare_parameter("bias_damping.bias", self.policy.bias)
-        self.declare_parameter("bias_damping.position_deadzone", self.policy.deadzone)
-        position_break_params = self.get_parameters_by_prefix("bias_damping")
+        self.declare_parameter('bias_damping.position_breaks', self.policy.breaks)
+        self.declare_parameter('bias_damping.bias', self.policy.bias)
+        self.declare_parameter('bias_damping.position_deadzone', self.policy.deadzone)
+        position_break_params = self.get_parameters_by_prefix('bias_damping')
 
         self.policy.breaks = \
-            position_break_params["position_breaks"].get_parameter_value().double_array_value
+            position_break_params['position_breaks'].get_parameter_value().double_array_value
         self.policy.bias = \
-            position_break_params["bias"].get_parameter_value().double_array_value
+            position_break_params['bias'].get_parameter_value().double_array_value
 
         self.policy.update_params()
 
     def spring_callback(self, data):
         bct = self.policy.bias_current_target(data.range_finder)
-        self.get_logger().info(f"Bias Damping: f({data.range_finder}) = {bct}")
+        self.get_logger().info(f'Bias Damping: f({data.range_finder}) = {bct}')
         if bct is None:
             return
 
