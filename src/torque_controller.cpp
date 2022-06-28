@@ -24,13 +24,17 @@ PBTorqueController::PBTorqueController(const std::string & node_name)
   policy_.reset(new PBTorqueControlPolicy());
   set_params();
 
-  set_pc_pack_rate();
+  set_pc_pack_rate_param();
 }
 
 void PBTorqueController::power_callback(const buoy_msgs::msg::PCRecord & data)
 {
   auto request = std::make_shared<buoy_msgs::srv::PCWindCurrCommand::Request>();
   request->wind_curr = policy_->WindingCurrentTarget(data.rpm, data.scale, data.retract);
+
+  RCLCPP_INFO_STREAM(
+    rclcpp::get_logger(this->get_name()),
+    "WindingCurrent: f(" << data.rpm << ", " << data.scale << ", " << data.retract << ") = " << request->wind_curr);
 
   auto response = pc_wind_curr_client_->async_send_request(request, pc_wind_curr_callback);
 }
