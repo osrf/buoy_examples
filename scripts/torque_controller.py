@@ -14,16 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import rclpy
-import numpy as np
-from scipy import interpolate
-
 from buoy_msgs.interface import Interface
-
 from buoy_msgs.srv import PCWindCurrCommand
+import numpy as np
+import rclpy
+from scipy import interpolate
 
 
 class PBTorqueControlPolicy(object):
+
     def __init__(self):
         self.Torque_constant = 0.438  # N-m/Amps
         self.N_Spec = np.array([0.0, 300.0, 600.0, 1000.0, 1700.0, 4400.0, 6790.0])  # RPM
@@ -61,8 +60,9 @@ class PBTorqueControlPolicy(object):
 
 
 class PBTorqueController(Interface):
+
     def __init__(self):
-        super().__init__("pb_torque_control")
+        super().__init__('pb_torque_control')
 
         self.policy = PBTorqueControlPolicy()
         self.set_params()
@@ -73,23 +73,24 @@ class PBTorqueController(Interface):
         request = PCWindCurrCommand.Request()
         request.wind_curr = self.policy.winding_current_target(data.rpm, data.scale, data.retract)
 
-        self.get_logger().info(f'WindingCurrent: f({data.rpm}, {data.scale}, {data.retract}) = {request.wind_curr}')
+        self.get_logger().info(f'WindingCurrent: f({data.rpm}, {data.scale}, {data.retract}) = ' +
+                               f'{request.wind_curr}')
 
         self.pc_wind_curr_future_ = self.pc_wind_curr_client_.call_async(request)
         self.pc_wind_curr_future_.add_done_callback(self.service_response_callback)
 
     def set_params(self):
-        self.declare_parameter("torque_constant", self.policy.Torque_constant)
+        self.declare_parameter('torque_constant', self.policy.Torque_constant)
         self.policy.Torque_constant = \
-            self.get_parameter("torque_constant").get_parameter_value().double_value
+            self.get_parameter('torque_constant').get_parameter_value().double_value
 
-        self.declare_parameter("n_spec", self.policy.N_Spec.tolist())
+        self.declare_parameter('n_spec', self.policy.N_Spec.tolist())
         self.policy.N_Spec = \
-            np.array(self.get_parameter("n_spec").get_parameter_value().double_array_value)
+            np.array(self.get_parameter('n_spec').get_parameter_value().double_array_value)
 
-        self.declare_parameter("torque_spec", self.policy.Torque_Spec.tolist())
+        self.declare_parameter('torque_spec', self.policy.Torque_Spec.tolist())
         self.policy.Torque_Spec = \
-            np.array(self.get_parameter("torque_spec").get_parameter_value().double_array_value)
+            np.array(self.get_parameter('torque_spec').get_parameter_value().double_array_value)
 
         self.policy.update_params()
         self.get_logger().info(str(self.policy))
