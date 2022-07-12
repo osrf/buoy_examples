@@ -73,6 +73,9 @@ class PBTorqueController(Interface):
         request = PCWindCurrCommand.Request()
         request.wind_curr = self.policy.winding_current_target(data.rpm, data.scale, data.retract)
 
+        self.get_logger().info(f'WindingCurrent: f({data.rpm}, {data.scale}, {data.retract}) = ' +
+                               f'{request.wind_curr}')
+
         self.pc_wind_curr_future_ = self.pc_wind_curr_client_.call_async(request)
         self.pc_wind_curr_future_.add_done_callback(self.service_response_callback)
 

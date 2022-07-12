@@ -22,8 +22,35 @@ target_compile_features(torque_controller PUBLIC c_std_99 cxx_std_17)  # Require
 install(TARGETS torque_controller
   DESTINATION lib/${PROJECT_NAME})
 
+
+###########################################
+# for buoy_tests
+add_library(torque_policy_interface INTERFACE)
+target_include_directories(torque_policy_interface INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+install(TARGETS torque_policy_interface
+  EXPORT export_torque_policy_interface
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib
+  INCLUDES DESTINATION include
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/JustInterp/
+  DESTINATION include/JustInterp
+)
+###########################################
+
 install(PROGRAMS
   scripts/torque_controller.py
+  scripts/bias_damping.py
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
@@ -40,5 +67,8 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+# for buoy_tests
+ament_export_targets(export_torque_policy_interface)
 
 ament_package()
