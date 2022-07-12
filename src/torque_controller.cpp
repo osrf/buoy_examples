@@ -38,6 +38,12 @@ void PBTorqueController::power_callback(const buoy_msgs::msg::PCRecord & data)
     "WindingCurrent: f(" << data.rpm << ", " << data.scale << ", " << data.retract << ") = " <<
       request->wind_curr);
 
+  PCWindCurrServiceCallback pc_wind_curr_callback =
+    default_service_response_callback<PCWindCurrServiceCallback,
+      PCWindCurrServiceResponseFuture>();
+
+                                                           // Move semantics destroys local
+                                                           // pc_wind_curr_callback object
   auto response = pc_wind_curr_client_->async_send_request(request, pc_wind_curr_callback);
 }
 
