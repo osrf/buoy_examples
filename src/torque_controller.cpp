@@ -42,8 +42,8 @@ void PBTorqueController::power_callback(const buoy_msgs::msg::PCRecord & data)
     default_service_response_callback<PCWindCurrServiceCallback,
       PCWindCurrServiceResponseFuture>();
 
-                                                           // Move semantics destroys local
-                                                           // pc_wind_curr_callback object
+  // Move semantics destroys local
+  // pc_wind_curr_callback object
   auto response = pc_wind_curr_client_->async_send_request(request, pc_wind_curr_callback);
 }
 
