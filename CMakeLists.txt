@@ -49,8 +49,8 @@ install(DIRECTORY include/JustInterp/
 ###########################################
 
 install(PROGRAMS
-  scripts/torque_controller.py
-  scripts/bias_damping.py
+  buoy_examples/torque_controller.py
+  buoy_examples/bias_damping.py
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
@@ -62,6 +62,8 @@ install(DIRECTORY
   config
   DESTINATION share/${PROJECT_NAME}
 )
+
+ament_python_install_package(${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
