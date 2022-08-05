@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "buoy_examples/torque_controller.hpp"
+
 #include <string>
 #include <memory>
 
@@ -42,7 +44,7 @@ void PBTorqueController::power_callback(const buoy_msgs::msg::PCRecord & data)
     default_service_response_callback<PCWindCurrServiceCallback,
       PCWindCurrServiceResponseFuture>();
 
-  // Move semantics destroys local
+  // NOTE: Move semantics destroys local
   // pc_wind_curr_callback object
   auto response = pc_wind_curr_client_->async_send_request(request, pc_wind_curr_callback);
 }
