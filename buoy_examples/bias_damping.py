@@ -52,7 +52,7 @@ class NonLinearBiasDamping(Interface):
         super().__init__('pb_nl_bias_damping')
         self.policy = NLBiasDampingPolicy()
         self.set_params()
-        self.set_sc_pack_rate_param()
+        self.set_sc_pack_rate_param(50.0)
 
     def set_params(self):
         self.declare_parameter('bias_damping.position_breaks', self.policy.breaks)
@@ -77,7 +77,7 @@ class NonLinearBiasDamping(Interface):
         request.bias_curr = float(bct)
 
         self.pc_bias_curr_future_ = self.pc_bias_curr_client_.call_async(request)
-        self.pc_bias_curr_future_.add_done_callback(self.service_response_callback)
+        self.pc_bias_curr_future_.add_done_callback(self.default_service_response_callback)
 
 
 if __name__ == '__main__':
