@@ -5,13 +5,13 @@ on: [push, pull_request]
 jobs:
   tests:
     name: Build and test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         include:
-          - ros-distro: "galactic"
+          - ros-distro: "humble"
     container:
-      image: ubuntu:20.04
+      image: ubuntu:22.04
     steps:
       - name: Checkout buoy_examples
         uses: actions/checkout@v2
@@ -22,7 +22,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: osrf/buoy_msgs
-          ref: main
+          # TODO Revert before merging
+          ref: chapulina/humble_garden
           path: buoy_msgs
       - name: Build and Test
         run: main/.github/workflows/build-and-test.sh
