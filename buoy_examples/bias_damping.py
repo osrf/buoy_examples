@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from buoy_msgs.interface import Interface
-from buoy_msgs.srv import PCBiasCurrCommand
+from buoy_api import Interface
+from buoy_interfaces.srv import PCBiasCurrCommand
 import rclpy
 from scipy import interpolate
 
