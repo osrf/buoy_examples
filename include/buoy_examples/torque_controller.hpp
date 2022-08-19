@@ -15,11 +15,10 @@
 #ifndef BUOY_EXAMPLES__TORQUE_CONTROLLER_HPP_
 #define BUOY_EXAMPLES__TORQUE_CONTROLLER_HPP_
 
-
-#include <string>
-#include <memory>
-
 #include <buoy_api/interface.hpp>
+
+#include <memory>
+#include <string>
 
 
 // forward declare
