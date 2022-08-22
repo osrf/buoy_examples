@@ -15,17 +15,16 @@
 #ifndef BUOY_EXAMPLES__TORQUE_CONTROLLER_HPP_
 #define BUOY_EXAMPLES__TORQUE_CONTROLLER_HPP_
 
+#include <buoy_api/interface.hpp>
 
-#include <string>
 #include <memory>
-
-#include "buoy_msgs/interface.hpp"
+#include <string>
 
 
 // forward declare
 struct PBTorqueControlPolicy;  // defined by user in torque_control_policy.hpp
 
-class PBTorqueController final : public buoy_msgs::Interface<PBTorqueController>
+class PBTorqueController final : public buoy_api::Interface<PBTorqueController>
 {
 public:
   explicit PBTorqueController(const std::string & node_name);
@@ -35,7 +34,7 @@ private:
   friend CRTP;  // syntactic sugar (see https://stackoverflow.com/a/58435857/9686600)
 
   void set_params() final;  // defined by user in torque_control_policy.hpp
-  void power_callback(const buoy_msgs::msg::PCRecord & data);
+  void power_callback(const buoy_interfaces::msg::PCRecord & data);
 
   std::unique_ptr<PBTorqueControlPolicy> policy_;
 };

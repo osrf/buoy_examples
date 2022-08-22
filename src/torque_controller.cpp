@@ -21,7 +21,7 @@
 
 
 PBTorqueController::PBTorqueController(const std::string & node_name)
-: buoy_msgs::Interface<PBTorqueController>(node_name)
+: buoy_api::Interface<PBTorqueController>(node_name)
 {
   policy_.reset(new PBTorqueControlPolicy());
   set_params();
@@ -29,9 +29,9 @@ PBTorqueController::PBTorqueController(const std::string & node_name)
   set_pc_pack_rate_param();
 }
 
-void PBTorqueController::power_callback(const buoy_msgs::msg::PCRecord & data)
+void PBTorqueController::power_callback(const buoy_interfaces::msg::PCRecord & data)
 {
-  auto request = std::make_shared<buoy_msgs::srv::PCWindCurrCommand::Request>();
+  auto request = std::make_shared<buoy_interfaces::srv::PCWindCurrCommand::Request>();
   request->wind_curr = policy_->WindingCurrentTarget(data.rpm, data.scale, data.retract);
 
   RCLCPP_INFO_STREAM(
