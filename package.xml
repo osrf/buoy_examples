@@ -12,7 +12,8 @@
   
   <depend>rclcpp</depend>
   <depend>rclpy</depend>
-  <depend>buoy_msgs</depend>
+  <depend>buoy_interfaces</depend>
+  <depend>buoy_api_cpp</depend>
   <depend>std_msgs</depend>
 
   <exec_depend>python3-scipy</exec_depend>
