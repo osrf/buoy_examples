@@ -15,11 +15,10 @@
 #ifndef BUOY_EXAMPLES__TORQUE_CONTROLLER_HPP_
 #define BUOY_EXAMPLES__TORQUE_CONTROLLER_HPP_
 
-#include <buoy_api/interface.hpp>
-
 #include <memory>
 #include <string>
 
+#include <buoy_api/interface.hpp>
 
 // forward declare
 struct PBTorqueControlPolicy;  // defined by user in torque_control_policy.hpp
