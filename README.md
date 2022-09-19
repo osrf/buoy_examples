@@ -2,6 +2,7 @@
 
 `buoy_examples` provides examples for controlling the buoy.
 
-## Quality Declaration
+## Note: The content of buoy_examples has been migrated to https://github.com/osrf/buoy_msgs
 
-This package claims to be in the **Quality Level 5** category, see the [Quality Declaration](QUALITY_DECLARATION.md) for more details.
+* https://github.com/osrf/buoy_msgs/tree/main/buoy_api_cpp
+* https://github.com/osrf/buoy_msgs/tree/main/buoy_api_py
